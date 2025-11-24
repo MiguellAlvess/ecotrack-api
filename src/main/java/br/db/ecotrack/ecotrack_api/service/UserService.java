@@ -8,17 +8,21 @@ import org.springframework.stereotype.Service;
 import br.db.ecotrack.ecotrack_api.domain.entity.User;
 import br.db.ecotrack.ecotrack_api.domain.entity.dto.UserRequestDto;
 import br.db.ecotrack.ecotrack_api.domain.entity.dto.UserResponseDto;
+import br.db.ecotrack.ecotrack_api.mapper.UserMapper;
 import br.db.ecotrack.ecotrack_api.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class UserService {
 
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
+  private final UserMapper userMapper;
 
-  public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+  public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, UserMapper userMapper) {
     this.userRepository = userRepository;
     this.passwordEncoder = passwordEncoder;
+    this.userMapper = userMapper;
   }
 
   public UserResponseDto createUser(UserRequestDto userRequestDto) {
@@ -37,6 +41,13 @@ public class UserService {
     user.setPassword(senhaHasheada);
 
     User savedUser = userRepository.save(user);
-    return new UserResponseDto(savedUser.getId(), savedUser.getName(), savedUser.getEmail());
+    return userMapper.toResponseDto(savedUser);
+  }
+
+  public UserResponseDto getUserById(Long id) {
+    User user = userRepository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + id));
+
+    return userMapper.toResponseDto(user);
   }
 }
