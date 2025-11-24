@@ -9,6 +9,7 @@ import br.db.ecotrack.ecotrack_api.domain.entity.User;
 import br.db.ecotrack.ecotrack_api.domain.entity.dto.UserRequestDto;
 import br.db.ecotrack.ecotrack_api.domain.entity.dto.UserResponseDto;
 import br.db.ecotrack.ecotrack_api.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class UserService {
@@ -38,5 +39,16 @@ public class UserService {
 
     User savedUser = userRepository.save(user);
     return new UserResponseDto(savedUser.getId(), savedUser.getName(), savedUser.getEmail());
+  }
+
+  public UserResponseDto getUserById(Long id) {
+    Optional<User> userOptional = userRepository.findById(id);
+
+    if (userOptional.isPresent()) {
+      User user = userOptional.get();
+      return new UserResponseDto(user.getId(), user.getName(), user.getEmail());
+    } else {
+      throw new EntityNotFoundException("User not found with ID: " + id);
+    }
   }
 }
