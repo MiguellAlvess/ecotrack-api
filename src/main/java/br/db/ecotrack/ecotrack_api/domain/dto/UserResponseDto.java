@@ -1,4 +1,4 @@
-package br.db.ecotrack.ecotrack_api.domain.entity.dto;
+package br.db.ecotrack.ecotrack_api.domain.dto;
 
 public record UserResponseDto(
         Long id,

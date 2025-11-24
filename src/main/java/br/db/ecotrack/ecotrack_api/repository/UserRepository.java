@@ -11,5 +11,6 @@ import br.db.ecotrack.ecotrack_api.domain.entity.User;
 public interface UserRepository extends JpaRepository<User, Long> {
 
   Optional<User> findByEmail(String email);
+  
 
 }
