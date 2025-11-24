@@ -10,18 +10,21 @@ import br.db.ecotrack.ecotrack_api.domain.dto.UserResponseDto;
 import br.db.ecotrack.ecotrack_api.domain.entity.User;
 import br.db.ecotrack.ecotrack_api.domain.mapper.UserMapper;
 import br.db.ecotrack.ecotrack_api.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
+
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService {
 
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
+  private final UserMapper userMapper;
 
-
-  public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+  public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, UserMapper userMapper) {
     this.userRepository = userRepository;
     this.passwordEncoder = passwordEncoder;
-   
+    this.userMapper = userMapper;
   }
 
   public UserResponseDto createUser(UserRequestDto userRequestDto) {
@@ -40,11 +43,16 @@ public class UserService {
     user.setPassword(senhaHasheada);
 
     User savedUser = userRepository.save(user);
-    return new UserResponseDto(savedUser.getId(), savedUser.getName(), savedUser.getEmail());
+
+    return userMapper.toDto(savedUser);
   }
 
-  public Optional<User> getUserById(Long id){
-    return userRepository.findById(id);
+  @Transactional(readOnly = true)
+  public UserResponseDto getUserById(Long id) {
+    return userRepository.findById(id)
+        .map(user -> userMapper.toDto(user))
+        .orElseThrow(() -> new EntityNotFoundException("User not found: "+id));
+
   }
 
 }

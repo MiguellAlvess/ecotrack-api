@@ -5,30 +5,25 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.db.ecotrack.ecotrack_api.domain.dto.UserRequestDto;
 import br.db.ecotrack.ecotrack_api.domain.dto.UserResponseDto;
-import br.db.ecotrack.ecotrack_api.domain.entity.User;
-import br.db.ecotrack.ecotrack_api.domain.mapper.UserMapper;
-import br.db.ecotrack.ecotrack_api.service.UserService;
 
-import java.util.Optional;
+import br.db.ecotrack.ecotrack_api.service.UserService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
+import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
   private final UserService userService;
-  private final UserMapper userMapper;
 
-  public UserController(UserService userService, UserMapper userMapper) {
+  public UserController(UserService userService) {
     this.userService = userService;
-    this.userMapper = userMapper;
+
   }
 
   @PostMapping
@@ -37,14 +32,13 @@ public class UserController {
     return ResponseEntity.status(HttpStatus.CREATED).body(createdUserDto);
   }
 
-  @GetMapping
-  public ResponseEntity<UserResponseDto> findUserById(@RequestParam Long id) {
-    Optional<User> user = userService.getUserById(id);
-  
-    if (user.isPresent()) {
-        return ResponseEntity.ok(userMapper.toDto(user.get()));
+  @GetMapping("/{id}")
+  public ResponseEntity<UserResponseDto> getUserById(@PathVariable Long id) {
+    try {
+      UserResponseDto userDto = userService.getUserById(id);
+      return ResponseEntity.ok(userDto);
+    } catch (jakarta.persistence.EntityNotFoundException e) {
+      return ResponseEntity.notFound().build();
     }
-
-    return ResponseEntity.notFound().build();
   }
 }
