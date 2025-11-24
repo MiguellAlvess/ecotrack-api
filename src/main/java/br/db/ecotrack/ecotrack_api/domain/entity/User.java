@@ -32,7 +32,7 @@ public class User {
   private String email;
 
   @Pattern(regexp = ".{8,}", message = "Password must be at least 8 characters long")
-  @Column(nullable = false, length = 50)
+  @Column(nullable = false, length = 225)
   private String password;
 
 }

@@ -2,33 +2,41 @@ package br.db.ecotrack.ecotrack_api.service;
 
 import java.util.Optional;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import br.db.ecotrack.ecotrack_api.domain.entity.User;
 import br.db.ecotrack.ecotrack_api.domain.entity.dto.UserRequestDto;
+import br.db.ecotrack.ecotrack_api.domain.entity.dto.UserResponseDto;
 import br.db.ecotrack.ecotrack_api.repository.UserRepository;
 
 @Service
 public class UserService {
 
   private final UserRepository userRepository;
+  private final PasswordEncoder passwordEncoder;
 
-  public UserService(UserRepository userRepository) {
+  public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
     this.userRepository = userRepository;
+    this.passwordEncoder = passwordEncoder;
   }
 
-  public User createUser(UserRequestDto userRequestDto) {
+  public UserResponseDto createUser(UserRequestDto userRequestDto) {
     User user = new User();
 
     user.setName(userRequestDto.name());
     user.setEmail(userRequestDto.email());
-    user.setPassword(userRequestDto.password());
+    String plainPassword = userRequestDto.password();
 
     Optional<User> existEmail = userRepository.findByEmail(user.getEmail());
     if (existEmail.isPresent()) {
       throw new IllegalArgumentException("Email already in use");
     }
 
-    return userRepository.save(user);
+    String senhaHasheada = passwordEncoder.encode(plainPassword);
+    user.setPassword(senhaHasheada);
+
+    User savedUser = userRepository.save(user);
+    return new UserResponseDto(savedUser.getId(), savedUser.getName(), savedUser.getEmail());
   }
 }
