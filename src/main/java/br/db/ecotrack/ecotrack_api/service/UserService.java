@@ -90,4 +90,10 @@ public class UserService {
         .orElseThrow(() -> new EntityNotFoundException("User not found: " + id));
   }
 
+  @Transactional
+  public void deleteUser(Long id) {
+    User user = getUserEntityById(id);
+    userRepository.delete(user);
+  }
+
 }
