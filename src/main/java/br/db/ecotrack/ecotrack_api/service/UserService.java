@@ -27,6 +27,7 @@ public class UserService {
     this.userMapper = userMapper;
   }
 
+  @Transactional
   public UserResponseDto createUser(UserRequestDto userRequestDto) {
     User user = new User();
 
@@ -51,8 +52,42 @@ public class UserService {
   public UserResponseDto getUserById(Long id) {
     return userRepository.findById(id)
         .map(user -> userMapper.toDto(user))
-        .orElseThrow(() -> new EntityNotFoundException("User not found: "+id));
+        .orElseThrow(() -> new EntityNotFoundException("User not found: " + id));
+  }
 
+  @Transactional
+  public UserResponseDto updateUser(Long id, UserRequestDto userRequestDto) {
+    User existingUser = getUserEntityById(id);
+
+    if (userRequestDto.name() != null) {
+      existingUser.setName(userRequestDto.name());
+    }
+    if (userRequestDto.email() != null) {
+      validateEmailForUpdate(userRequestDto.email(), id);
+      existingUser.setEmail(userRequestDto.email());
+    }
+    if (userRequestDto.password() != null) {
+      existingUser.setPassword(passwordEncoder.encode(userRequestDto.password()));
+    }
+
+    User updatedUser = userRepository.save(existingUser);
+    return userMapper.toDto(updatedUser);
+  }
+
+  @Transactional(readOnly = true)
+  public void validateEmailForUpdate(String email, Long userId) {
+    userRepository.findByEmail(email)
+        .ifPresent(user -> {
+          if (!user.getId().equals(userId)) {
+            throw new IllegalArgumentException("Email already in use: " + email);
+          }
+        });
+  }
+
+  @Transactional(readOnly = true)
+  public User getUserEntityById(Long id) {
+    return userRepository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("User not found: " + id));
   }
 
 }
