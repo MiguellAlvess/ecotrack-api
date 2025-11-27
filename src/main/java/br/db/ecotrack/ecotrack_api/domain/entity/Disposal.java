@@ -8,6 +8,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,7 +32,7 @@ public class Disposal {
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
   private Long disposalId;
 
-  @Column(nullable = false, length = 10)
+  @Column(nullable = false)
   private Double quantity;
 
   @Enumerated(EnumType.STRING)
@@ -45,11 +46,11 @@ public class Disposal {
   @Column(nullable = false)
   private LocalDate disposalDate;
 
-  @ManyToOne
-  @JoinColumn(name = "userId", nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id", nullable = false)
   private User user;
 
-  @ManyToOne
-  @JoinColumn(name = "materialId", nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "material_id", nullable = false)
   private Material material;
 }
