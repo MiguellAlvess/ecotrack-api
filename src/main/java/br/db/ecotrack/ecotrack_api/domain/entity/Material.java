@@ -19,13 +19,14 @@ import lombok.Setter;
 @Table(name = "MATERIALS")
 public class Material {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long materialId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  private Long materialId;
 
-    @Column(nullable = false, unique = true, length = 100)
-    private String type;
+  @Column(nullable = false, unique = true, length = 100)
+  private String type;
 
-    @Column(length = 500)
-    private String description;
+  @Column(length = 500)
+  private String description;
+
 }
