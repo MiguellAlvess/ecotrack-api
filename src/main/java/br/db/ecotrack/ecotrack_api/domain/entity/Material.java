@@ -21,10 +21,10 @@ public class Material {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
+    private Long materialId;
 
     @Column(nullable = false, unique = true, length = 100)
-    private String name;
+    private String type;
 
     @Column(length = 500)
     private String description;
