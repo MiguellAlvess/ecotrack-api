@@ -1,10 +1,13 @@
 package br.db.ecotrack.ecotrack_api.domain.entity;
 
+import java.time.LocalDate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,17 +19,25 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "MATERIALS")
-public class Material {
+@Table(name = "PURCHASES")
+public class Purchase {
 
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
-  private Long materialId;
+  private Long purchaseId;
 
-  @Column(nullable = false, unique = true, length = 100)
-  private String type;
+  @Column(nullable = false)
+  private Double quantity;
 
-  @Column(length = 500)
-  private String description;
+  @Column(nullable = false)
+  private LocalDate purchaseDate;
+
+  @ManyToOne
+  @JoinColumn(name = "userId", nullable = false)
+  private User user;
+
+  @ManyToOne
+  @JoinColumn(name = "materialId", nullable = false)
+  private Material material;
 
 }
