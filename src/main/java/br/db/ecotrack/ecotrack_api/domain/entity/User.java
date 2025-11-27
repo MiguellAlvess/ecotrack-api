@@ -22,7 +22,7 @@ public class User {
 
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
-  private Long id;
+  private Long userId;
 
   @Column(nullable = false, length = 250)
   private String name;

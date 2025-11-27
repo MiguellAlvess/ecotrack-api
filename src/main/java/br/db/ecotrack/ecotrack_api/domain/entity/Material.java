@@ -20,11 +20,11 @@ import lombok.Setter;
 public class Material {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long materialId;
 
     @Column(nullable = false, unique = true, length = 100)
-    private String name;
+    private String type;
 
     @Column(length = 500)
     private String description;

@@ -11,7 +11,7 @@ public interface UserMapper {
 
     UserResponseDto toDto(User user);
 
-    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "userId", ignore = true)
     User toEntity(UserRequestDto userRequestDto);
 }
 

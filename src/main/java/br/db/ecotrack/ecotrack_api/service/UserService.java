@@ -78,7 +78,7 @@ public class UserService {
   public void validateEmailForUpdate(String email, Long userId) {
     userRepository.findByEmail(email)
         .ifPresent(user -> {
-          if (!user.getId().equals(userId)) {
+          if (!user.getUserId().equals(userId)) {
             throw new IllegalArgumentException("Email already in use: " + email);
           }
         });
