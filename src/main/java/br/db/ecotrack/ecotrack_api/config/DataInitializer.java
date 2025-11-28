@@ -23,11 +23,14 @@ public class DataInitializer implements CommandLineRunner {
         if (materialRepository.count() == 0) {
             System.out.println("Populando a tabela de materiais com dados iniciais...");
 
-            Material plastic = new Material(null, MaterialType.PLASTIC.getTypeName(), "Garrafas PET, embalagens, sacolas.");
+            Material plastic = new Material(null, MaterialType.PLASTIC.getTypeName(),
+                    "Garrafas PET, embalagens, sacolas.");
             Material glass = new Material(null, MaterialType.GLASS.getTypeName(), "Garrafas de vidro, potes, frascos.");
             Material metal = new Material(null, MaterialType.METAL.getTypeName(), "Latas de alumínio, aço, tampinhas.");
-            Material paper = new Material(null, MaterialType.PAPER.getTypeName(), "Jornais, revistas, caixas de papelão.");
-            Material organic = new Material(null, MaterialType.ORGANIC.getTypeName(), "Restos de alimentos, cascas de frutas.");
+            Material paper = new Material(null, MaterialType.PAPER.getTypeName(),
+                    "Jornais, revistas, caixas de papelão.");
+            Material organic = new Material(null, MaterialType.ORGANIC.getTypeName(),
+                    "Restos de alimentos, cascas de frutas.");
 
             List<Material> initialMaterials = Arrays.asList(plastic, glass, metal, paper, organic);
 

@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import br.db.ecotrack.ecotrack_api.domain.dto.MaterialDto;
+import br.db.ecotrack.ecotrack_api.domain.dto.MaterialRequestDto;
+import br.db.ecotrack.ecotrack_api.domain.dto.MaterialResponseDto;
 import br.db.ecotrack.ecotrack_api.service.MaterialService;
 import jakarta.persistence.EntityNotFoundException;
 
@@ -26,15 +27,15 @@ public class MaterialController {
     }
 
     @GetMapping
-    public ResponseEntity<List<MaterialDto>> getAllMaterials() {
-        List<MaterialDto> materials = materialService.getAll();
+    public ResponseEntity<List<MaterialResponseDto>> getAllMaterials() {
+        List<MaterialResponseDto> materials = materialService.getAll();
         return ResponseEntity.ok(materials);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MaterialDto> getMaterialById(@PathVariable Long id) {
+    public ResponseEntity<MaterialResponseDto> getMaterialById(@PathVariable Long id) {
         try {
-            MaterialDto material = materialService.getById(id);
+            MaterialResponseDto material = materialService.getById(id);
             return ResponseEntity.ok(material);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
@@ -42,9 +43,9 @@ public class MaterialController {
     }
 
     @PostMapping
-    public ResponseEntity<MaterialDto> createMaterial(@RequestBody MaterialDto material) {
+    public ResponseEntity<MaterialResponseDto> createMaterial(@RequestBody MaterialRequestDto materialRequestDto) {
         try {
-            MaterialDto savedMaterial = materialService.createMaterial(material);
+            MaterialResponseDto savedMaterial = materialService.createMaterial(materialRequestDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedMaterial);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
@@ -52,9 +53,10 @@ public class MaterialController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<MaterialDto> updateMaterial(@PathVariable Long id, @RequestBody MaterialDto materialDto) {
+    public ResponseEntity<MaterialResponseDto> updateMaterial(@PathVariable Long id,
+            @RequestBody MaterialRequestDto materialRequestDto) {
         try {
-            MaterialDto updated = materialService.updateMaterial(id, materialDto);
+            MaterialResponseDto updated = materialService.updateMaterial(id, materialRequestDto);
             return ResponseEntity.ok(updated);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();

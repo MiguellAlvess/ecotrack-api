@@ -1,7 +1,6 @@
 package br.db.ecotrack.ecotrack_api.domain.dto;
 
-public record MaterialDto(
-        Long materialId,
+public record MaterialRequestDto(
         String type,
         String description) {
 }
