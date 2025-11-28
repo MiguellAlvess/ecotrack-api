@@ -1,17 +1,14 @@
 package br.db.ecotrack.ecotrack_api.service;
 
 import java.util.Optional;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import br.db.ecotrack.ecotrack_api.domain.dto.UserRequestDto;
 import br.db.ecotrack.ecotrack_api.domain.dto.UserResponseDto;
 import br.db.ecotrack.ecotrack_api.domain.entity.User;
 import br.db.ecotrack.ecotrack_api.domain.mapper.UserMapper;
 import br.db.ecotrack.ecotrack_api.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
-
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
