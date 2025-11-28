@@ -1,7 +1,6 @@
 package br.db.ecotrack.ecotrack_api.domain.entity;
 
 import java.time.LocalDate;
-
 import br.db.ecotrack.ecotrack_api.domain.enums.DisposalDestination;
 import br.db.ecotrack.ecotrack_api.domain.enums.MeasurementUnit;
 import jakarta.persistence.Column;
