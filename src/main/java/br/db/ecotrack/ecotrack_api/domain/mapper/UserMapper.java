@@ -9,8 +9,8 @@ import br.db.ecotrack.ecotrack_api.domain.entity.User;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
-    UserResponseDto toDto(User user);
+  UserResponseDto toDto(User user);
 
-    @Mapping(target = "userId", ignore = true)
-    User toEntity(UserRequestDto userRequestDto);
+  @Mapping(target = "userId", ignore = true)
+  User toEntity(UserRequestDto userRequestDto);
 }
