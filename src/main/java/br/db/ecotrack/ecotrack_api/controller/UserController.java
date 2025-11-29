@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import br.db.ecotrack.ecotrack_api.domain.dto.UserRequestDto;
 import br.db.ecotrack.ecotrack_api.domain.dto.UserResponseDto;
+import br.db.ecotrack.ecotrack_api.service.CurrentUserService;
 import br.db.ecotrack.ecotrack_api.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +21,11 @@ import jakarta.persistence.EntityNotFoundException;
 public class UserController {
 
   private final UserService userService;
+  private final CurrentUserService currentUserService;
 
-  public UserController(UserService userService) {
+  public UserController(UserService userService, CurrentUserService currentUserService) {
     this.userService = userService;
-
+    this.currentUserService = currentUserService;
   }
 
   @PostMapping
@@ -64,5 +66,11 @@ public class UserController {
     } catch (EntityNotFoundException e) {
       return ResponseEntity.notFound().build();
     }
+  }
+
+  @GetMapping("/me")
+  public UserResponseDto me() {
+    UserResponseDto userResponseDto = currentUserService.get();
+    return userResponseDto;
   }
 }
