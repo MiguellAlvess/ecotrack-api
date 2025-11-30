@@ -1,17 +1,14 @@
 package br.db.ecotrack.ecotrack_api.config;
 
-import org.springframework.security.config.Customizer;
-import org.springframework.beans.factory.annotation.Value;
-
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-import java.util.Arrays;
-import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -24,9 +21,6 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
@@ -39,72 +33,56 @@ import com.nimbusds.jose.proc.SecurityContext;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    @Value("${rsa.public-key}")
-    private RSAPublicKey rsaPublicKey;
+  @Value("${rsa.public-key}")
+  private RSAPublicKey rsaPublicKey;
 
-    @Value("${rsa.private-key}")
-    private RSAPrivateKey rsaPrivateKey;
+  @Value("${rsa.private-key}")
+  private RSAPrivateKey rsaPrivateKey;
 
-    private static final String[] PUBLIC_PATHS = {
-            "/api/login/**",
-            "/swagger-ui.html",
-            "/swagger-ui/**",
-            "/v3/api-docs/**",
-            "/v3/api-docs",
-            "/swagger-resources/**",
-            "/swagger-resources",
-            "/webjars/**"
-    };
+  private static final String[] PUBLIC_PATHS = {
+      "/api/login/**",
+      "/swagger-ui.html",
+      "/swagger-ui/**",
+      "/v3/api-docs/**",
+      "/swagger-resources/**",
+      "/webjars/**"
+  };
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+        .cors(Customizer.withDefaults())
+        .csrf(csrf -> csrf.disable())
+        .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
+        .authorizeHttpRequests(authorize -> authorize
+            .requestMatchers(PathRequest.toH2Console()).permitAll()
+            .requestMatchers(PUBLIC_PATHS).permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
+            .requestMatchers("/api/users/**").authenticated()
+            .requestMatchers("/api/materials/**").authenticated()
+            .anyRequest().authenticated())
+        .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.disable())
-                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(PathRequest.toH2Console()).permitAll()
-                        .requestMatchers(PUBLIC_PATHS).permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
-                        .requestMatchers("/api/users/**").authenticated()
-                        .requestMatchers("/api/materials/**").authenticated()
-                        .anyRequest().authenticated())
-                .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(Customizer.withDefaults()))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+    return http.build();
+  }
 
-        return http.build();
-    }
+  @Bean
+  public JwtEncoder jwtEncoder() {
+    JWK jwk = new RSAKey.Builder(this.rsaPublicKey)
+        .privateKey(this.rsaPrivateKey)
+        .build();
+    ImmutableJWKSet<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
+    return new NimbusJwtEncoder(jwks);
+  }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://127.0.0.1:5173"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true);
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+  @Bean
+  public JwtDecoder jwtDecoder() {
+    return NimbusJwtDecoder.withPublicKey(rsaPublicKey).build();
+  }
 
-    @Bean
-    public JwtEncoder jwtEncoder() throws Exception {
-        JWK jwk = new RSAKey.Builder(this.rsaPublicKey)
-                .privateKey(this.rsaPrivateKey)
-                .build();
-        ImmutableJWKSet<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
-        return new NimbusJwtEncoder(jwks);
-    }
-
-    @Bean
-    public JwtDecoder jwtDecoder() throws Exception {
-        return NimbusJwtDecoder.withPublicKey(rsaPublicKey).build();
-    }
-
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 }
