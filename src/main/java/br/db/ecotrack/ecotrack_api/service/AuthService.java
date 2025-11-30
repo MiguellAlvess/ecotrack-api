@@ -12,7 +12,7 @@ import br.db.ecotrack.ecotrack_api.controller.request.LoginRequestDto;
 import br.db.ecotrack.ecotrack_api.controller.response.LoginResponseDto;
 import br.db.ecotrack.ecotrack_api.controller.response.UserResponseDto;
 import br.db.ecotrack.ecotrack_api.domain.entity.User;
-import br.db.ecotrack.ecotrack_api.domain.mapper.UserMapper;
+import br.db.ecotrack.ecotrack_api.mapper.UserMapper;
 import br.db.ecotrack.ecotrack_api.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 
@@ -23,6 +23,7 @@ public class AuthService {
   private final PasswordEncoder passwordEncoder;
   private final JwtEncoder jwtEncoder;
   private final UserMapper userMapper;
+  private final long expiresIn = 86400L;
 
   public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtEncoder jwtEncoder,
       UserMapper userMapper) {
@@ -33,18 +34,13 @@ public class AuthService {
   }
 
   public LoginResponseDto login(LoginRequestDto loginRequestDto) {
-
     User user = userRepository.findByEmail(loginRequestDto.email())
         .orElseThrow(() -> new EntityNotFoundException("Email não encontrado:" + loginRequestDto.email()));
 
     boolean passwordMatches = checkPassword(loginRequestDto.password(), user.getPassword());
-
     if (!passwordMatches) {
       throw new IllegalArgumentException("Senha incorreta");
     }
-
-    long expiresIn = 600L;
-
     JwtClaimsSet jwt = JwtClaimsSet.builder()
         .issuer("ecotrack-api")
         .subject(user.getName())

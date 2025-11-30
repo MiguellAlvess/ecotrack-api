@@ -9,22 +9,21 @@ import org.springframework.web.bind.annotation.RestController;
 import br.db.ecotrack.ecotrack_api.controller.request.LoginRequestDto;
 import br.db.ecotrack.ecotrack_api.controller.response.LoginResponseDto;
 import br.db.ecotrack.ecotrack_api.service.AuthService;
-import lombok.AllArgsConstructor;
+import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/login")
-@AllArgsConstructor
+@RequestMapping("/auth")
 public class AuthController {
 
   private final AuthService authService;
 
-  @PostMapping()
-  public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto LoginRequest) {
-    try {
-      LoginResponseDto loginResponseDto = authService.login(LoginRequest);
-      return ResponseEntity.ok(loginResponseDto);
-    } catch (Exception e) {
-      return ResponseEntity.badRequest().build();
-    }
+  public AuthController(AuthService authService) {
+    this.authService = authService;
+  }
+
+  @PostMapping("/login")
+  public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto loginRequestDto) {
+    LoginResponseDto response = authService.login(loginRequestDto);
+    return ResponseEntity.ok(response);
   }
 }
