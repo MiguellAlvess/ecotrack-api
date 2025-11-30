@@ -1,4 +1,4 @@
-package br.db.ecotrack.ecotrack_api.domain.mapper;
+package br.db.ecotrack.ecotrack_api.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

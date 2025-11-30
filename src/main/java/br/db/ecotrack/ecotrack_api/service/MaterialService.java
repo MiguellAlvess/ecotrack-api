@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import br.db.ecotrack.ecotrack_api.controller.request.MaterialRequestDto;
 import br.db.ecotrack.ecotrack_api.controller.response.MaterialResponseDto;
 import br.db.ecotrack.ecotrack_api.domain.entity.Material;
-import br.db.ecotrack.ecotrack_api.domain.mapper.MaterialMapper;
+import br.db.ecotrack.ecotrack_api.mapper.MaterialMapper;
 import br.db.ecotrack.ecotrack_api.repository.MaterialRepository;
 import jakarta.persistence.EntityNotFoundException;
 
