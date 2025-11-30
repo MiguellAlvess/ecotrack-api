@@ -1,7 +1,5 @@
 package br.db.ecotrack.ecotrack_api.service;
 
-import java.util.Optional;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,27 +22,6 @@ public class UserService {
     this.userRepository = userRepository;
     this.userMapper = userMapper;
     this.passwordEncoder = passwordEncoder;
-  }
-
-  @Transactional
-  public UserResponseDto createUser(UserRequestDto userRequestDto) {
-    User user = new User();
-
-    user.setName(userRequestDto.name());
-    user.setEmail(userRequestDto.email());
-    String plainPassword = userRequestDto.password();
-
-    Optional<User> existEmail = userRepository.findByEmail(user.getEmail());
-    if (existEmail.isPresent()) {
-      throw new IllegalArgumentException("Email already in use");
-    }
-
-    String senhaHasheada = passwordEncoder.encode(plainPassword);
-    user.setPassword(senhaHasheada);
-
-    User savedUser = userRepository.save(user);
-
-    return userMapper.toDto(savedUser);
   }
 
   @Transactional(readOnly = true)

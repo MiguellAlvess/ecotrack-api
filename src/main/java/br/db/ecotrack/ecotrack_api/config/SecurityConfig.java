@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -40,7 +39,8 @@ public class SecurityConfig {
   private RSAPrivateKey rsaPrivateKey;
 
   private static final String[] PUBLIC_PATHS = {
-      "/api/login/**",
+      "/api/users/auth/login",
+      "/api/users/auth/register",
       "/swagger-ui.html",
       "/swagger-ui/**",
       "/v3/api-docs/**",
@@ -57,7 +57,6 @@ public class SecurityConfig {
         .authorizeHttpRequests(authorize -> authorize
             .requestMatchers(PathRequest.toH2Console()).permitAll()
             .requestMatchers(PUBLIC_PATHS).permitAll()
-            .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
             .requestMatchers("/api/users/**").authenticated()
             .requestMatchers("/api/materials/**").authenticated()
             .anyRequest().authenticated())
