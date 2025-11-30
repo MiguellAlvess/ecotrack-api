@@ -1,0 +1,29 @@
+package br.db.ecotrack.ecotrack_api.controller;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import br.db.ecotrack.ecotrack_api.controller.request.LoginRequestDto;
+import br.db.ecotrack.ecotrack_api.controller.response.LoginResponseDto;
+import br.db.ecotrack.ecotrack_api.service.AuthService;
+import jakarta.validation.Valid;
+
+@RestController
+@RequestMapping("/auth")
+public class AuthController {
+
+  private final AuthService authService;
+
+  public AuthController(AuthService authService) {
+    this.authService = authService;
+  }
+
+  @PostMapping("/login")
+  public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto loginRequestDto) {
+    LoginResponseDto response = authService.login(loginRequestDto);
+    return ResponseEntity.ok(response);
+  }
+}
