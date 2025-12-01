@@ -12,6 +12,6 @@ public record DisposalRequestDto(
     @NotNull(message = "Quantidade é obrigatória") @Positive(message = "Quantidade deve ser positiva") Double quantity,
     @NotNull(message = "Unidade é obrigatória") MeasurementUnit unit,
     @NotNull(message = "Destino é obrigatório") DisposalDestination destination,
-    @NotBlank(message = "Data de descarte é obrigatório") String disposalDate,
+    @NotBlank(message = "Data de descarte é obrigatório") LocalDate disposalDate,
     @NotNull(message = "Material ID é obrigatório") Long materialId) {
 }
