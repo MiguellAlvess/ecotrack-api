@@ -1,4 +1,4 @@
-package br.db.ecotrack.ecotrack_api.domain.dto;
+package br.db.ecotrack.ecotrack_api.controller.response;
 
 import java.time.LocalDate;
 

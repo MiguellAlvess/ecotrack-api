@@ -1,4 +1,4 @@
-package br.db.ecotrack.ecotrack_api.domain.dto;
+package br.db.ecotrack.ecotrack_api.controller.request;
 
 import br.db.ecotrack.ecotrack_api.domain.enums.DisposalDestination;
 import br.db.ecotrack.ecotrack_api.domain.enums.MeasurementUnit;

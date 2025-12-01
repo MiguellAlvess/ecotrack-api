@@ -1,40 +1,87 @@
 package br.db.ecotrack.ecotrack_api.config;
 
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
+import com.nimbusds.jose.proc.SecurityContext;
+
 @Configuration
+@EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
-    private static final String[] PUBLIC_PATHS = {
-        "/api/users/**",
-        "/swagger-ui/**",
-        "/v3/api-docs/**",
-        "/swagger-resources/**",
-        "/webjars/**"
-    };
+  @Value("${rsa.public-key}")
+  private RSAPublicKey rsaPublicKey;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+  @Value("${rsa.private-key}")
+  private RSAPrivateKey rsaPrivateKey;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http ) throws Exception {
-        http
-            .csrf(csrf -> csrf.disable( ))
-            .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
-            .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers(PathRequest.toH2Console()).permitAll()
-                .requestMatchers(PUBLIC_PATHS).permitAll()
-                .anyRequest().authenticated()
-            );
-        return http.build( );
-    }
+  private static final String[] PUBLIC_PATHS = {
+      "/api/users/auth/login",
+      "/api/users/auth/register",
+      "/swagger-ui.html",
+      "/swagger-ui/**",
+      "/v3/api-docs/**",
+      "/swagger-resources/**",
+      "/webjars/**"
+  };
+
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+        .cors(Customizer.withDefaults())
+        .csrf(csrf -> csrf.disable())
+        .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
+        .authorizeHttpRequests(authorize -> authorize
+            .requestMatchers(PathRequest.toH2Console()).permitAll()
+            .requestMatchers(PUBLIC_PATHS).permitAll()
+            .requestMatchers("/api/users/**").authenticated()
+            .requestMatchers("/api/materials/**").authenticated()
+            .anyRequest().authenticated())
+        .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+    return http.build();
+  }
+
+  @Bean
+  public JwtEncoder jwtEncoder() {
+    JWK jwk = new RSAKey.Builder(this.rsaPublicKey)
+        .privateKey(this.rsaPrivateKey)
+        .build();
+    ImmutableJWKSet<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
+    return new NimbusJwtEncoder(jwks);
+  }
+
+  @Bean
+  public JwtDecoder jwtDecoder() {
+    return NimbusJwtDecoder.withPublicKey(rsaPublicKey).build();
+  }
+
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 }

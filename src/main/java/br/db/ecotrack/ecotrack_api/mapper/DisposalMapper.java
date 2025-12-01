@@ -1,9 +1,10 @@
-package br.db.ecotrack.ecotrack_api.domain.mapper;
+package br.db.ecotrack.ecotrack_api.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import br.db.ecotrack.ecotrack_api.domain.dto.DisposalRequestDto;
-import br.db.ecotrack.ecotrack_api.domain.dto.DisposalResponseDto;
+
+import br.db.ecotrack.ecotrack_api.controller.request.DisposalRequestDto;
+import br.db.ecotrack.ecotrack_api.controller.response.DisposalResponseDto;
 import br.db.ecotrack.ecotrack_api.domain.entity.Disposal;
 
 @Mapper(componentModel = "spring")

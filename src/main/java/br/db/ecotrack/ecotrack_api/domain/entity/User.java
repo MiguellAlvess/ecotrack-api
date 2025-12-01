@@ -45,4 +45,5 @@ public class User {
 
   @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
   private List<Disposal> disposals = new ArrayList<>();
+
 }
