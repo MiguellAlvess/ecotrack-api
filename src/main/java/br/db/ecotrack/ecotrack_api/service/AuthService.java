@@ -73,7 +73,7 @@ public class AuthService {
   private LoginResponseDto buildLoginResponse(User user) {
     JwtClaimsSet jwt = JwtClaimsSet.builder()
         .issuer("ecotrack-api")
-        .subject(user.getName())
+        .subject(user.getUserId().toString())
         .issuedAt(Instant.now())
         .expiresAt(Instant.now().plusSeconds(expiresIn))
         .claim("email", user.getEmail())

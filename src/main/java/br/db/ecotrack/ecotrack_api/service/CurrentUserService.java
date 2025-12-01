@@ -6,6 +6,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import br.db.ecotrack.ecotrack_api.controller.response.UserResponseDto;
+import br.db.ecotrack.ecotrack_api.domain.entity.User;
 import br.db.ecotrack.ecotrack_api.repository.UserRepository;
 
 @Service
@@ -15,6 +16,21 @@ public class CurrentUserService {
 
   public CurrentUserService(UserRepository userRepository) {
     this.userRepository = userRepository;
+  }
+
+  public Long getCurrentUserId() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    
+    if (authentication == null || !(authentication.getPrincipal() instanceof Jwt jwt)) {
+        throw new SecurityException("Usuário não autenticado");
+    }
+    return Long.parseLong(jwt.getSubject());
+  }
+
+  public User getUserEntity() {
+    Long userId = getCurrentUserId();
+    return userRepository.findById(userId)
+        .orElseThrow(() -> new IllegalStateException("Usuário não encontrado: " + userId));
   }
 
   public String getCurrentUserEmail() {
