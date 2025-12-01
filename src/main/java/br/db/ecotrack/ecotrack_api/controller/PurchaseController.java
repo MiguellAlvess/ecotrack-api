@@ -50,10 +50,10 @@ public class PurchaseController {
         }
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<PurchaseResponseDto>> getAllPurchases(@PathVariable Long userId) {
+    @GetMapping("/all")
+    public ResponseEntity<List<PurchaseResponseDto>> getAllPurchases() {
         try {
-            List<PurchaseResponseDto> purchases = purchaseService.getAllPurchasesByUser(userId);
+            List<PurchaseResponseDto> purchases = purchaseService.getAllPurchasesByUser();
             return ResponseEntity.ok(purchases);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

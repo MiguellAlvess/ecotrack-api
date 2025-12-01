@@ -57,14 +57,10 @@ public class PurchaseService {
     }
 
     @Transactional(readOnly = true)
-    public List<PurchaseResponseDto> getAllPurchasesByUser(Long userId) {
+    public List<PurchaseResponseDto> getAllPurchasesByUser() {
         Long currentUserId = currentUserService.getCurrentUserId();
 
-        if (!currentUserId.equals(userId)) {
-            throw new SecurityException("Access denied for user: " + currentUserId);
-        }
-
-        return purchaseRepository.findAllByUser_UserId(userId)
+        return purchaseRepository.findAllByUser_UserId(currentUserId)
                 .stream()
                 .map(purchase -> purchaseMapper.toDto(purchase))
                 .toList();
