@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import br.db.ecotrack.ecotrack_api.controller.request.MaterialRequestDto;
 import br.db.ecotrack.ecotrack_api.controller.response.MaterialResponseDto;
 import br.db.ecotrack.ecotrack_api.service.MaterialService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/materials")
@@ -43,7 +43,7 @@ public class MaterialController {
   }
 
   @PostMapping
-  public ResponseEntity<MaterialResponseDto> createMaterial(@RequestBody MaterialRequestDto materialRequestDto) {
+  public ResponseEntity<MaterialResponseDto> createMaterial(@RequestBody @Valid MaterialRequestDto materialRequestDto) {
     try {
       MaterialResponseDto savedMaterial = materialService.createMaterial(materialRequestDto);
       return ResponseEntity.status(HttpStatus.CREATED).body(savedMaterial);
@@ -54,7 +54,7 @@ public class MaterialController {
 
   @PatchMapping("/{id}")
   public ResponseEntity<MaterialResponseDto> updateMaterial(@PathVariable Long id,
-      @RequestBody MaterialRequestDto materialRequestDto) {
+      @RequestBody @Valid MaterialRequestDto materialRequestDto) {
     try {
       MaterialResponseDto updated = materialService.updateMaterial(id, materialRequestDto);
       return ResponseEntity.ok(updated);
