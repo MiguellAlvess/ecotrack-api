@@ -1,5 +1,7 @@
 package br.db.ecotrack.ecotrack_api.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import br.db.ecotrack.ecotrack_api.controller.request.DisposalRequestDto;
@@ -55,6 +57,13 @@ public class DisposalService {
     return disposalRepository.findById(id)
         .map(disposal -> disposalMapper.toDto(disposal))
         .orElseThrow(() -> new EntityNotFoundException("Disposal not found: " + id));
+  }
+
+  public List<DisposalResponseDto> getAllDisposal() {
+    List<Disposal> disposals = disposalRepository.findAll();
+    return disposals.stream()
+        .map(disposal -> disposalMapper.toDto(disposal))
+        .toList();
   }
 
 }

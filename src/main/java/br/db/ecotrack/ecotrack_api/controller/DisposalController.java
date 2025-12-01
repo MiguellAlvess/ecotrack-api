@@ -8,6 +8,8 @@ import br.db.ecotrack.ecotrack_api.controller.response.DisposalResponseDto;
 import br.db.ecotrack.ecotrack_api.service.DisposalService;
 import jakarta.validation.Valid;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,6 +35,11 @@ public class DisposalController {
   @GetMapping("/{id}")
   public ResponseEntity<DisposalResponseDto> getDisposalById(@PathVariable Long id) {
     return ResponseEntity.ok(disposalService.getDisposalById(id));
+  }
+
+  @GetMapping
+  public ResponseEntity<List<DisposalResponseDto>> getAllDisposal() {
+    return ResponseEntity.ok(disposalService.getAllDisposal());
   }
 
 }
