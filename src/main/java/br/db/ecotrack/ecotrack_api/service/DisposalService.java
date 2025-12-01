@@ -3,6 +3,7 @@ package br.db.ecotrack.ecotrack_api.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.db.ecotrack.ecotrack_api.controller.request.DisposalRequestDto;
 import br.db.ecotrack.ecotrack_api.controller.response.DisposalResponseDto;
@@ -14,7 +15,6 @@ import br.db.ecotrack.ecotrack_api.repository.DisposalRepository;
 import br.db.ecotrack.ecotrack_api.repository.MaterialRepository;
 import br.db.ecotrack.ecotrack_api.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 
 @Service
 public class DisposalService {
@@ -53,17 +53,31 @@ public class DisposalService {
     return disposalMapper.toDto(disposalSaved);
   }
 
+  @Transactional(readOnly = true)
   public DisposalResponseDto getDisposalById(Long id) {
     return disposalRepository.findById(id)
         .map(disposal -> disposalMapper.toDto(disposal))
         .orElseThrow(() -> new EntityNotFoundException("Disposal not found: " + id));
   }
 
+  @Transactional(readOnly = true)
   public List<DisposalResponseDto> getAllDisposal() {
     List<Disposal> disposals = disposalRepository.findAll();
     return disposals.stream()
         .map(disposal -> disposalMapper.toDto(disposal))
         .toList();
+  }
+
+  @Transactional(readOnly = true)
+  public Disposal getDisposalEntityById(Long id) {
+    return disposalRepository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("Disposal not found: " + id));
+  }
+
+  @Transactional
+  public void deleteDisposalById(Long id) {
+    Disposal disposal = getDisposalEntityById(id);
+    disposalRepository.delete(disposal);
   }
 
 }
