@@ -14,7 +14,6 @@ import br.db.ecotrack.ecotrack_api.mapper.PurchaseMapper;
 import br.db.ecotrack.ecotrack_api.repository.MaterialRepository;
 import br.db.ecotrack.ecotrack_api.repository.PurchaseRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.Valid;
 
 @Service
 public class PurchaseService {
@@ -33,7 +32,7 @@ public class PurchaseService {
     }
 
     @Transactional
-    public PurchaseResponseDto createPurchase(@Valid PurchaseRequestDto purchaseRequestDto) {
+    public PurchaseResponseDto createPurchase(PurchaseRequestDto purchaseRequestDto) {
         User user = currentUserService.getUserEntity();
 
         Material material = materialRepository.findById(purchaseRequestDto.materialId())

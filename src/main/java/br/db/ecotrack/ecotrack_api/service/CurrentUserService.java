@@ -22,7 +22,7 @@ public class CurrentUserService {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     
     if (authentication == null || !(authentication.getPrincipal() instanceof Jwt jwt)) {
-        throw new SecurityException("Usuário não autenticado");
+        throw new SecurityException("User not authenticated");
     }
     return Long.parseLong(jwt.getSubject());
   }
@@ -30,7 +30,7 @@ public class CurrentUserService {
   public User getUserEntity() {
     Long userId = getCurrentUserId();
     return userRepository.findById(userId)
-        .orElseThrow(() -> new IllegalStateException("Usuário não encontrado: " + userId));
+        .orElseThrow(() -> new IllegalStateException("User not found: " + userId));
   }
 
   public String getCurrentUserEmail() {
@@ -42,7 +42,6 @@ public class CurrentUserService {
   public UserResponseDto get() {
     return userRepository.findByEmail(getCurrentUserEmail())
         .map(user -> new UserResponseDto(user.getUserId(), user.getName(), user.getEmail()))
-        .orElseThrow(() -> new IllegalStateException("Usuário não encontrado"));
+        .orElseThrow(() -> new IllegalStateException("User not found"));
   }
-
 }

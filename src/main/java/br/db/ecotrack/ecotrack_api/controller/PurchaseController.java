@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import br.db.ecotrack.ecotrack_api.controller.request.PurchaseRequestDto;
 import br.db.ecotrack.ecotrack_api.controller.response.PurchaseResponseDto;
 import br.db.ecotrack.ecotrack_api.service.PurchaseService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -35,17 +35,17 @@ public class PurchaseController {
         try {
             PurchaseResponseDto purchaseDTO = purchaseService.createPurchase(purchaseRequestDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(purchaseDTO);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        }
-    }
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } 
+}
 
     @GetMapping("/{purchaseId}")
     public ResponseEntity<PurchaseResponseDto> getPurchaseById(@PathVariable Long purchaseId) {
         try {
             PurchaseResponseDto purchaseDTO = purchaseService.getPurchaseById(purchaseId);
             return ResponseEntity.ok(purchaseDTO);
-        } catch (Exception e) {
+        } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
@@ -55,8 +55,10 @@ public class PurchaseController {
         try {
             List<PurchaseResponseDto> purchases = purchaseService.getAllPurchasesByUser();
             return ResponseEntity.ok(purchases);
-        } catch (Exception e) {
+        } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }
 
@@ -65,7 +67,7 @@ public class PurchaseController {
         try {
             purchaseService.deletePurchase(purchaseId);
             return ResponseEntity.noContent().build();
-        } catch (Exception e) {
+        } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
