@@ -11,6 +11,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequestMapping("/api/disposals")
@@ -26,6 +28,11 @@ public class DisposalController {
   public ResponseEntity<DisposalResponseDto> createDisposal(@Valid @RequestBody DisposalRequestDto disposalRequestDto) {
     DisposalResponseDto savedDisposal = disposalService.createDisposal(disposalRequestDto);
     return ResponseEntity.status(201).body(savedDisposal);
+  }
+
+  @GetMapping("/{id}")
+  public ResponseEntity<DisposalResponseDto> getDisposalById(@PathVariable Long id) {
+    return ResponseEntity.ok(disposalService.getDisposalById(id));
   }
 
 }

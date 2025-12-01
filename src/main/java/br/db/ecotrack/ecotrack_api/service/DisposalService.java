@@ -22,6 +22,7 @@ public class DisposalService {
   private final MaterialRepository materialRepository;
   private final UserRepository userRepository;
   private final CurrentUserService currentUserService;
+  public Object getDisposalById;
 
   public DisposalService(DisposalRepository disposalRepository, DisposalMapper disposalMapper,
       MaterialRepository materialRepository, UserRepository userRepository, CurrentUserService currentUserService) {
@@ -39,7 +40,7 @@ public class DisposalService {
 
     String email = currentUserService.getCurrentUserEmail();
     User user = userRepository.findByEmail(email)
-        .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+        .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
 
     Disposal disposal = disposalMapper.toEntity(disposalRequestDto);
 
@@ -48,6 +49,12 @@ public class DisposalService {
     Disposal disposalSaved = disposalRepository.save(disposal);
 
     return disposalMapper.toDto(disposalSaved);
+  }
+
+  public DisposalResponseDto getDisposalById(Long id) {
+    return disposalRepository.findById(id)
+        .map(disposal -> disposalMapper.toDto(disposal))
+        .orElseThrow(() -> new EntityNotFoundException("Disposal not found: " + id));
   }
 
 }
