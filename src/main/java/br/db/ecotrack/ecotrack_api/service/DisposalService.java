@@ -1,8 +1,5 @@
 package br.db.ecotrack.ecotrack_api.service;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import br.db.ecotrack.ecotrack_api.controller.request.DisposalRequestDto;
@@ -24,13 +21,15 @@ public class DisposalService {
   private final DisposalMapper disposalMapper;
   private final MaterialRepository materialRepository;
   private final UserRepository userRepository;
+  private final CurrentUserService currentUserService;
 
   public DisposalService(DisposalRepository disposalRepository, DisposalMapper disposalMapper,
-      MaterialRepository materialRepository, UserRepository userRepository) {
+      MaterialRepository materialRepository, UserRepository userRepository, CurrentUserService currentUserService) {
     this.disposalRepository = disposalRepository;
     this.disposalMapper = disposalMapper;
     this.materialRepository = materialRepository;
     this.userRepository = userRepository;
+    this.currentUserService = currentUserService;
   }
 
   @Transactional
@@ -38,11 +37,9 @@ public class DisposalService {
     Material material = materialRepository.findById(disposalRequestDto.materialId())
         .orElseThrow(() -> new EntityNotFoundException("Material not found"));
 
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    Jwt jwt = (Jwt) auth.getPrincipal();
-    String email = jwt.getClaim("email");
+    String email = currentUserService.getCurrentUserEmail();
     User user = userRepository.findByEmail(email)
-        .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+        .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
     Disposal disposal = disposalMapper.toEntity(disposalRequestDto);
 

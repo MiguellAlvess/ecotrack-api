@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.db.ecotrack.ecotrack_api.controller.request.DisposalRequestDto;
 import br.db.ecotrack.ecotrack_api.controller.response.DisposalResponseDto;
 import br.db.ecotrack.ecotrack_api.service.DisposalService;
+import jakarta.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +23,7 @@ public class DisposalController {
   }
 
   @PostMapping
-  public ResponseEntity<DisposalResponseDto> createDisposal(@RequestBody DisposalRequestDto disposalRequestDto) {
+  public ResponseEntity<DisposalResponseDto> createDisposal(@Valid @RequestBody DisposalRequestDto disposalRequestDto) {
     DisposalResponseDto savedDisposal = disposalService.createDisposal(disposalRequestDto);
     return ResponseEntity.status(201).body(savedDisposal);
   }
