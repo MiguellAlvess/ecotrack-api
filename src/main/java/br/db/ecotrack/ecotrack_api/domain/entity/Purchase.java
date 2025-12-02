@@ -3,6 +3,9 @@ package br.db.ecotrack.ecotrack_api.domain.entity;
 import java.time.LocalDate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import br.db.ecotrack.ecotrack_api.domain.enums.MeasurementUnit;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,6 +32,10 @@ public class Purchase {
 
   @Column(nullable = false)
   private Double quantity;
+
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false, length = 20)
+  private MeasurementUnit unit;
 
   @Column(nullable = false)
   private LocalDate purchaseDate;
