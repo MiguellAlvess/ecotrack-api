@@ -10,6 +10,7 @@ import br.db.ecotrack.ecotrack_api.domain.entity.Purchase;
 @Mapper(componentModel = "spring")
 public interface PurchaseMapper {
 
+    @Mapping(target = "materialType", source = "material.type")
     PurchaseResponseDto toDto(Purchase purchase);
 
     @Mapping(target = "material", ignore = true)

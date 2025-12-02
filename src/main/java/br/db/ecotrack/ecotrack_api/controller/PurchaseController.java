@@ -2,6 +2,7 @@ package br.db.ecotrack.ecotrack_api.controller;
 
 import java.util.List;
 
+import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -37,8 +38,8 @@ public class PurchaseController {
             return ResponseEntity.status(HttpStatus.CREATED).body(purchaseDTO);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } 
-}
+        }
+    }
 
     @GetMapping("/{purchaseId}")
     public ResponseEntity<PurchaseResponseDto> getPurchaseById(@PathVariable Long purchaseId) {
@@ -52,14 +53,8 @@ public class PurchaseController {
 
     @GetMapping("/all")
     public ResponseEntity<List<PurchaseResponseDto>> getAllPurchases() {
-        try {
-            List<PurchaseResponseDto> purchases = purchaseService.getAllPurchasesByUser();
-            return ResponseEntity.ok(purchases);
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (SecurityException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        List<PurchaseResponseDto> purchases = purchaseService.getAllPurchasesByUser();
+        return ResponseEntity.ok(purchases);
     }
 
     @DeleteMapping("/{purchaseId}")
