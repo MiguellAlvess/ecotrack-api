@@ -2,13 +2,11 @@ package br.db.ecotrack.ecotrack_api.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import br.db.ecotrack.ecotrack_api.controller.request.DisposalRequestDto;
 import br.db.ecotrack.ecotrack_api.controller.response.DisposalResponseDto;
 import br.db.ecotrack.ecotrack_api.service.DisposalService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
