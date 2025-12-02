@@ -52,8 +52,11 @@ public class DisposalService {
         .orElseThrow(() -> new EntityNotFoundException("Disposal not found: " + id));
   }
 
-  public List<DisposalResponseDto> getAllDisposal() {
-    List<Disposal> disposals = disposalRepository.findAll();
+  @Transactional(readOnly = true)
+  public List<DisposalResponseDto> getAllDisposalsForCurrentUser() {
+    User currentUser = currentUserService.getCurrentUserEntity();
+    List<Disposal> disposals = disposalRepository.findByUser(currentUser);
+
     return disposals.stream()
         .map(disposal -> disposalMapper.toDto(disposal))
         .toList();
