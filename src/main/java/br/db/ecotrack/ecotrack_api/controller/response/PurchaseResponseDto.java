@@ -6,7 +6,7 @@ import br.db.ecotrack.ecotrack_api.domain.enums.MeasurementUnit;
 public record PurchaseResponseDto(
     Long purchaseId,
     Double quantity,
-    MeasurementUnit measurementUnit,
+    MeasurementUnit unit,
     LocalDate purchaseDate,
     String materialType) {
 }
