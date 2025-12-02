@@ -1,9 +1,6 @@
 package br.db.ecotrack.ecotrack_api.service;
 
-import java.util.List;
-
 import org.springframework.stereotype.Service;
-
 import br.db.ecotrack.ecotrack_api.controller.request.DisposalRequestDto;
 import br.db.ecotrack.ecotrack_api.controller.response.DisposalResponseDto;
 import br.db.ecotrack.ecotrack_api.domain.entity.Disposal;
@@ -12,9 +9,9 @@ import br.db.ecotrack.ecotrack_api.domain.entity.User;
 import br.db.ecotrack.ecotrack_api.mapper.DisposalMapper;
 import br.db.ecotrack.ecotrack_api.repository.DisposalRepository;
 import br.db.ecotrack.ecotrack_api.repository.MaterialRepository;
-import br.db.ecotrack.ecotrack_api.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import java.util.List;
 
 @Service
 public class DisposalService {
@@ -22,16 +19,14 @@ public class DisposalService {
   private final DisposalRepository disposalRepository;
   private final DisposalMapper disposalMapper;
   private final MaterialRepository materialRepository;
-  private final UserRepository userRepository;
   private final CurrentUserService currentUserService;
   public Object getDisposalById;
 
   public DisposalService(DisposalRepository disposalRepository, DisposalMapper disposalMapper,
-      MaterialRepository materialRepository, UserRepository userRepository, CurrentUserService currentUserService) {
+      MaterialRepository materialRepository, CurrentUserService currentUserService) {
     this.disposalRepository = disposalRepository;
     this.disposalMapper = disposalMapper;
     this.materialRepository = materialRepository;
-    this.userRepository = userRepository;
     this.currentUserService = currentUserService;
   }
 
@@ -40,14 +35,12 @@ public class DisposalService {
     Material material = materialRepository.findById(disposalRequestDto.materialId())
         .orElseThrow(() -> new EntityNotFoundException("Material not found"));
 
-    String email = currentUserService.getCurrentUserEmail();
-    User user = userRepository.findByEmail(email)
-        .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+    User currentUser = currentUserService.getCurrentUserEntity();
 
     Disposal disposal = disposalMapper.toEntity(disposalRequestDto);
 
     disposal.setMaterial(material);
-    disposal.setUser(user);
+    disposal.setUser(currentUser);
     Disposal disposalSaved = disposalRepository.save(disposal);
 
     return disposalMapper.toDto(disposalSaved);
