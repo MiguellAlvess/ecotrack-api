@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import java.util.List;
@@ -51,6 +52,16 @@ public class DisposalController {
   public ResponseEntity<List<DisposalResponseDto>> getAllDisposals() {
     List<DisposalResponseDto> userDisposals = disposalService.getAllDisposalsForCurrentUser();
     return ResponseEntity.ok(userDisposals);
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<?> deleteDisposal(@PathVariable Long id) {
+    try {
+      disposalService.deleteDisposalById(id);
+      return ResponseEntity.noContent().build();
+    } catch (EntityNotFoundException e) {
+      return ResponseEntity.notFound().build();
+    }
   }
 
 }

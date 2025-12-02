@@ -47,9 +47,8 @@ public class DisposalService {
 
   @Transactional(readOnly = true)
   public DisposalResponseDto getDisposalById(Long id) {
-    return disposalRepository.findById(id)
-        .map(disposal -> disposalMapper.toDto(disposal))
-        .orElseThrow(() -> new EntityNotFoundException("Disposal not found: " + id));
+    Disposal disposal = findDisposalByIdAndCurrentUser(id);
+    return disposalMapper.toDto(disposal);
   }
 
   @Transactional(readOnly = true)
@@ -60,6 +59,23 @@ public class DisposalService {
     return disposals.stream()
         .map(disposal -> disposalMapper.toDto(disposal))
         .toList();
+  }
+
+  @Transactional
+  public void deleteDisposalById(Long id) {
+    Disposal disposal = findDisposalByIdAndCurrentUser(id);
+    disposalRepository.delete(disposal);
+  }
+
+  private Disposal findDisposalByIdAndCurrentUser(Long id) {
+    User currentUser = currentUserService.getCurrentUserEntity();
+    Disposal disposal = disposalRepository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("Descarte não encontrado com o id: " + id));
+
+    if (!disposal.getUser().getUserId().equals(currentUser.getUserId())) {
+      throw new EntityNotFoundException("Descarte não encontrado com o id: " + id);
+    }
+    return disposal;
   }
 
 }
