@@ -55,9 +55,13 @@ public class DisposalController {
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteDisposal(@PathVariable Long id) {
-    disposalService.deleteDisposalById(id);
-    return ResponseEntity.noContent().build();
+  public ResponseEntity<?> deleteDisposal(@PathVariable Long id) {
+    try {
+      disposalService.deleteDisposalById(id);
+      return ResponseEntity.noContent().build();
+    } catch (EntityNotFoundException e) {
+      return ResponseEntity.notFound().build();
+    }
   }
 
 }
