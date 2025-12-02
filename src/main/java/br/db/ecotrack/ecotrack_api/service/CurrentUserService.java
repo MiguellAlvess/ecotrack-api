@@ -17,21 +17,6 @@ public class CurrentUserService {
     this.userRepository = userRepository;
   }
 
-  public Long getCurrentUserId() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    
-    if (authentication == null || !(authentication.getPrincipal() instanceof Jwt jwt)) {
-        throw new SecurityException("Usuário não autenticado");
-    }
-    return Long.parseLong(jwt.getSubject());
-  }
-
-  public User getUserEntity() {
-    Long userId = getCurrentUserId();
-    return userRepository.findById(userId)
-        .orElseThrow(() -> new IllegalStateException("Usuário não encontrado: " + userId));
-  }
-
   public String getCurrentUserEmail() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     Jwt jwt = (Jwt) authentication.getPrincipal();
@@ -53,4 +38,5 @@ public class CurrentUserService {
         .orElseThrow(() -> new IllegalStateException(
             "Usuário autenticado com o email '" + email + "' não foi encontrado no banco de dados."));
   }
+
 }

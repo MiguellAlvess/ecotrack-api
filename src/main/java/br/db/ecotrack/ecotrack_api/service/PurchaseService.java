@@ -1,10 +1,7 @@
 package br.db.ecotrack.ecotrack_api.service;
 
-import java.util.List;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import br.db.ecotrack.ecotrack_api.controller.request.PurchaseRequestDto;
 import br.db.ecotrack.ecotrack_api.controller.response.PurchaseResponseDto;
 import br.db.ecotrack.ecotrack_api.domain.entity.Material;
@@ -14,6 +11,7 @@ import br.db.ecotrack.ecotrack_api.mapper.PurchaseMapper;
 import br.db.ecotrack.ecotrack_api.repository.MaterialRepository;
 import br.db.ecotrack.ecotrack_api.repository.PurchaseRepository;
 import jakarta.persistence.EntityNotFoundException;
+import java.util.List;
 
 @Service
 public class PurchaseService {
@@ -33,7 +31,7 @@ public class PurchaseService {
 
     @Transactional
     public PurchaseResponseDto createPurchase(PurchaseRequestDto purchaseRequestDto) {
-        User user = currentUserService.getUserEntity();
+        User user = currentUserService.getCurrentUserEntity();
 
         Material material = materialRepository.findById(purchaseRequestDto.materialId())
                 .orElseThrow(() -> new EntityNotFoundException(
@@ -50,25 +48,34 @@ public class PurchaseService {
 
     @Transactional(readOnly = true)
     public PurchaseResponseDto getPurchaseById(Long purchaseId) {
-        return purchaseRepository.findById(purchaseId)
-                .map(purchase -> purchaseMapper.toDto(purchase))
-                .orElseThrow(() -> new EntityNotFoundException("Purchase not found: " + purchaseId));
+        Purchase purchase = findPurchaseByIdAndCurrentUser(purchaseId);
+        return purchaseMapper.toDto(purchase);
     }
 
     @Transactional(readOnly = true)
-    public List<PurchaseResponseDto> getAllPurchasesByUser() {
-        Long currentUserId = currentUserService.getCurrentUserId();
+    public List<PurchaseResponseDto> getAllPurchasesForCurrentUser() {
+        User currentUser = currentUserService.getCurrentUserEntity();
+        List<Purchase> purchases = purchaseRepository.findByUser(currentUser);
 
-        return purchaseRepository.findAllByUser_UserId(currentUserId)
-                .stream()
+        return purchases.stream()
                 .map(purchase -> purchaseMapper.toDto(purchase))
                 .toList();
     }
 
     @Transactional
     public void deletePurchase(Long purchaseId) {
-        Purchase purchase = purchaseRepository.findById(purchaseId)
-                .orElseThrow(() -> new EntityNotFoundException("Purchase not found: " + purchaseId));
-        purchaseRepository.deleteById(purchaseId);
+        Purchase purchase = findPurchaseByIdAndCurrentUser(purchaseId);
+        purchaseRepository.delete(purchase);
+    }
+
+    private Purchase findPurchaseByIdAndCurrentUser(Long id) {
+        User currentUser = currentUserService.getCurrentUserEntity();
+        Purchase purchase = purchaseRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Compra não encontrada com o id: " + id));
+
+        if (!purchase.getUser().getUserId().equals(currentUser.getUserId())) {
+            throw new EntityNotFoundException("Compra não encontrada com o id: " + id);
+        }
+        return purchase;
     }
 }

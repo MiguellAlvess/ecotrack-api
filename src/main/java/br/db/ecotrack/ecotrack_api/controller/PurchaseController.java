@@ -1,17 +1,13 @@
 package br.db.ecotrack.ecotrack_api.controller;
 
 import java.util.List;
-
-import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 import br.db.ecotrack.ecotrack_api.controller.request.PurchaseRequestDto;
 import br.db.ecotrack.ecotrack_api.controller.response.PurchaseResponseDto;
 import br.db.ecotrack.ecotrack_api.service.PurchaseService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
-
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,8 +27,7 @@ public class PurchaseController {
     }
 
     @PostMapping
-    public ResponseEntity<PurchaseResponseDto> createPurchase(
-            @RequestBody @Valid PurchaseRequestDto purchaseRequestDto) {
+    public ResponseEntity<?> createPurchase(@RequestBody @Valid PurchaseRequestDto purchaseRequestDto) {
         try {
             PurchaseResponseDto purchaseDTO = purchaseService.createPurchase(purchaseRequestDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(purchaseDTO);
@@ -51,9 +46,9 @@ public class PurchaseController {
         }
     }
 
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<List<PurchaseResponseDto>> getAllPurchases() {
-        List<PurchaseResponseDto> purchases = purchaseService.getAllPurchasesByUser();
+        List<PurchaseResponseDto> purchases = purchaseService.getAllPurchasesForCurrentUser();
         return ResponseEntity.ok(purchases);
     }
 
