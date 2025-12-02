@@ -12,6 +12,8 @@ public interface UserMapper {
 
   UserResponseDto toDto(User user);
 
+  @Mapping(target = "purchases", ignore = true)
+  @Mapping(target = "disposals", ignore = true)
   @Mapping(target = "userId", ignore = true)
   User toEntity(UserRequestDto userRequestDto);
 }
