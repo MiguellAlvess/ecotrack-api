@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequestMapping("/api/disposals")
@@ -31,6 +33,16 @@ public class DisposalController {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     } catch (Exception e) {
       return ResponseEntity.badRequest().body("Erro ao processar a requisição: " + e.getMessage());
+    }
+  }
+
+  @GetMapping("/{id}")
+  public ResponseEntity<?> getDisposalById(@PathVariable Long id) {
+    try {
+      DisposalResponseDto disposal = disposalService.getDisposalById(id);
+      return ResponseEntity.ok(disposal);
+    } catch (EntityNotFoundException e) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
   }
 
