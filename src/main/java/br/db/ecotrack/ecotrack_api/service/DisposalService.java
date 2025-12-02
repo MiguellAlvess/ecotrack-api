@@ -10,7 +10,7 @@ import br.db.ecotrack.ecotrack_api.mapper.DisposalMapper;
 import br.db.ecotrack.ecotrack_api.repository.DisposalRepository;
 import br.db.ecotrack.ecotrack_api.repository.MaterialRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
@@ -20,7 +20,6 @@ public class DisposalService {
   private final DisposalMapper disposalMapper;
   private final MaterialRepository materialRepository;
   private final CurrentUserService currentUserService;
-  public Object getDisposalById;
 
   public DisposalService(DisposalRepository disposalRepository, DisposalMapper disposalMapper,
       MaterialRepository materialRepository, CurrentUserService currentUserService) {
@@ -46,6 +45,7 @@ public class DisposalService {
     return disposalMapper.toDto(disposalSaved);
   }
 
+  @Transactional(readOnly = true)
   public DisposalResponseDto getDisposalById(Long id) {
     return disposalRepository.findById(id)
         .map(disposal -> disposalMapper.toDto(disposal))

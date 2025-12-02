@@ -38,8 +38,13 @@ public class DisposalController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<DisposalResponseDto> getDisposalById(@PathVariable Long id) {
-    return ResponseEntity.ok(disposalService.getDisposalById(id));
+  public ResponseEntity<?> getDisposalById(@PathVariable Long id) {
+    try {
+      DisposalResponseDto disposal = disposalService.getDisposalById(id);
+      return ResponseEntity.ok(disposal);
+    } catch (EntityNotFoundException e) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
   }
 
   @GetMapping
