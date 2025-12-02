@@ -53,8 +53,10 @@ public class DisposalService {
   }
 
   @Transactional(readOnly = true)
-  public List<DisposalResponseDto> getAllDisposal() {
-    List<Disposal> disposals = disposalRepository.findAll();
+  public List<DisposalResponseDto> getAllDisposalsForCurrentUser() {
+    User currentUser = currentUserService.getCurrentUserEntity();
+    List<Disposal> disposals = disposalRepository.findByUser(currentUser);
+
     return disposals.stream()
         .map(disposal -> disposalMapper.toDto(disposal))
         .toList();

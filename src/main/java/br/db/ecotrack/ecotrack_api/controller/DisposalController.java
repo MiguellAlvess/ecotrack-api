@@ -49,8 +49,9 @@ public class DisposalController {
   }
 
   @GetMapping
-  public ResponseEntity<List<DisposalResponseDto>> getAllDisposal() {
-    return ResponseEntity.ok(disposalService.getAllDisposal());
+  public ResponseEntity<List<DisposalResponseDto>> getAllDisposals() {
+    List<DisposalResponseDto> userDisposals = disposalService.getAllDisposalsForCurrentUser();
+    return ResponseEntity.ok(userDisposals);
   }
 
   @DeleteMapping("/{id}")
