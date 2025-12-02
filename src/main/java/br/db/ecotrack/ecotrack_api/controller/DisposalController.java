@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/disposals")
@@ -44,6 +45,12 @@ public class DisposalController {
     } catch (EntityNotFoundException e) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
+  }
+
+  @GetMapping
+  public ResponseEntity<List<DisposalResponseDto>> getAllDisposals() {
+    List<DisposalResponseDto> userDisposals = disposalService.getAllDisposalsForCurrentUser();
+    return ResponseEntity.ok(userDisposals);
   }
 
 }
