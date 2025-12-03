@@ -9,7 +9,7 @@ Este projeto serve como o backend para a aplicação EcoTrack, fornecendo endpoi
 ![Diagrama de Entidades](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/MiguellAlvess/ecotrack-api/refs/heads/docs/56/create-project-readme/docs/diagram.puml)
 
 
-## 🚀 Rodando o projeto localmente
+## 🚀 Rodando o Projeto Localmente
 
 ### Pré-requisitos
 - Java 21
