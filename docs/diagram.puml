@@ -85,8 +85,8 @@ note right of Material
 end note
 
 note right of Disposal
-  (ex: reciclagem,
-  aterro sanitário, etc)
+  (ex: reciclável,
+  compostagem, etc)
 end note
 
 @enduml
