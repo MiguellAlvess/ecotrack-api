@@ -51,7 +51,7 @@ public class MaterialControllerTest {
 
     @Test
     @WithMockUser
-    void getMaterialById_Should_Return200AndMaterial_When_IdExists() throws Exception {
+    void getMaterialById_Should_Return200AndMaterial_WhenIdExists() throws Exception {
         Long existingId = 1L;
         MaterialResponseDto responseDto = new MaterialResponseDto(existingId, "Plástico", "Qualquer tipo de plástico");
 
@@ -65,7 +65,7 @@ public class MaterialControllerTest {
 
     @Test
     @WithMockUser
-    void getMaterialById_Should_Return404_When_IdDoesNotExist() throws Exception {
+    void getMaterialById_Should_Return404_WhenIdDoesNotExist() throws Exception {
         Long nonExistentId = 99L;
 
         when(materialService.getById(nonExistentId))
