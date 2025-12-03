@@ -6,7 +6,7 @@ hide empty members
 
 ' Definição das Entidades (Classes)
 class User {
-  + id: Long <<PK>>
+  + userId: Long <<PK>>
   --
   + name: String
   + email: String
@@ -14,14 +14,14 @@ class User {
 }
 
 class Material {
-  + id: Long <<PK>>
+  + materialId: Long <<PK>>
   --
-  + name: String
+  + type: String
   + description: String
 }
 
 class Purchase {
-  + id: Long <<PK>>
+  + purchaseId: Long <<PK>>
   --
   + quantity: Double
   + measurementUnit: MeasurementUnit
@@ -32,7 +32,7 @@ class Purchase {
 }
 
 class Disposal {
-  + id: Long <<PK>>
+  + disposalId: Long <<PK>>
   --
   + quantity: Double
   + unit: MeasurementUnit
@@ -60,13 +60,13 @@ enum DisposalDestination {
 }
 
 ' Definição das Relações
-' Uma Compra (Purchase) pertence a um Usuário (User)
-' Uma Compra (Purchase) está associada a um Material
+' Um User tem muitas Purchases
+' Muitas Purchases são de um Material
 User "1" -- "0..*" Purchase
 Material "1" -- "0..*" Purchase
 
-' Um Descarte (Disposal) pertence a um Usuário (User)
-' Um Descarte (Disposal) está associado a um Material
+' Um User tem muitos Disposals
+' Muitos Disposals são de um Material
 User "1" -- "0..*" Disposal
 Material "1" -- "0..*" Disposal
 
