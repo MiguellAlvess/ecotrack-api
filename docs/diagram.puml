@@ -1,0 +1,92 @@
+@startuml
+' Configurações para melhorar a aparência
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+hide empty members
+
+' Definição das Entidades (Classes)
+class User {
+  + id: Long <<PK>>
+  --
+  + name: String
+  + email: String
+  + password: String
+}
+
+class Material {
+  + id: Long <<PK>>
+  --
+  + name: String
+  + description: String
+}
+
+class Purchase {
+  + id: Long <<PK>>
+  --
+  + quantity: Double
+  + measurementUnit: MeasurementUnit
+  + purchaseDate: LocalDate
+  --
+  + user_id: Long <<FK>>
+  + material_id: Long <<FK>>
+}
+
+class Disposal {
+  + id: Long <<PK>>
+  --
+  + quantity: Double
+  + unit: MeasurementUnit
+  + destination: DisposalDestination
+  + disposalDate: LocalDate
+  --
+  + user_id: Long <<FK>>
+  + material_id: Long <<FK>>
+}
+
+' Definição dos Enums (como classes com estereótipo <<enum>>)
+enum MeasurementUnit {
+  KG
+  G
+  L
+  ML
+  UNIDADE
+}
+
+enum DisposalDestination {
+  RECICLAVEL
+  COMPOSTAGEM
+  REJEITO
+  DOACAO
+}
+
+' Definição das Relações
+' Uma Compra (Purchase) pertence a um Usuário (User)
+' Uma Compra (Purchase) está associada a um Material
+User "1" -- "0..*" Purchase
+Material "1" -- "0..*" Purchase
+
+' Um Descarte (Disposal) pertence a um Usuário (User)
+' Um Descarte (Disposal) está associado a um Material
+User "1" -- "0..*" Disposal
+Material "1" -- "0..*" Disposal
+
+' Relações com os Enums
+Purchase ..> MeasurementUnit
+Disposal ..> MeasurementUnit
+Disposal ..> DisposalDestination
+
+' Adicionando as notas (balões de exemplo)
+note top of Purchase : "Compra"
+note top of Disposal : "Resíduo"
+
+note right of Material
+  (ex: "Plástico", "Vidro")
+  (ex: "Garrafas, pacotes...")
+end note
+
+note right of Disposal
+  (ex: reciclagem,
+  aterro sanitário, etc)
+end note
+
+@enduml
