@@ -4,6 +4,11 @@ API RESTful para o projeto **EcoTrack**, uma plataforma para rastreamento de ati
 
 Este projeto serve como o backend para a aplicação EcoTrack, fornecendo endpoints para gerenciar usuários, materiais recicláveis, compras e descartes de forma segura e eficiente.
 
+### Diagrama de Entidades
+
+![Diagrama de Entidades](https://raw.githubusercontent.com/MiguellAlvess/ecotrack-api/refs/heads/docs/56/create-project-readme/docs/diagram.puml)
+
+
 ## 🚀 Rodando o projeto localmente
 
 ### Pré-requisitos
