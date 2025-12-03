@@ -6,7 +6,7 @@ Este projeto serve como o backend para a aplicação EcoTrack, fornecendo endpoi
 
 ### Diagrama de Entidades
 
-![Diagrama de Entidades](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/MiguellAlvess/ecotrack-api/refs/heads/docs/56/create-project-readme/docs/diagram.puml&version=2)
+![Diagrama de Entidades](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/MiguellAlvess/ecotrack-api/refs/heads/main/docs/diagram.puml&version=1)
 
 
 ## 🚀 Rodando o Projeto Localmente
