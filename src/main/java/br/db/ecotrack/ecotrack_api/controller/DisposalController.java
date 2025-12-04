@@ -38,10 +38,10 @@ public class DisposalController {
     }
   }
 
-  @GetMapping("/{id}")
-  public ResponseEntity<?> getDisposalById(@PathVariable Long id) {
+  @GetMapping("/{disposalId}")
+  public ResponseEntity<?> getDisposalById(@PathVariable Long disposalId) {
     try {
-      DisposalResponseDto disposal = disposalService.getDisposalById(id);
+      DisposalResponseDto disposal = disposalService.getDisposalById(disposalId);
       return ResponseEntity.ok(disposal);
     } catch (EntityNotFoundException e) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -54,10 +54,10 @@ public class DisposalController {
     return ResponseEntity.ok(userDisposals);
   }
 
-  @DeleteMapping("/{id}")
-  public ResponseEntity<?> deleteDisposal(@PathVariable Long id) {
+  @DeleteMapping("/{disposalId}")
+  public ResponseEntity<?> deleteDisposal(@PathVariable Long disposalId) {
     try {
-      disposalService.deleteDisposalById(id);
+      disposalService.deleteDisposalById(disposalId);
       return ResponseEntity.noContent().build();
     } catch (EntityNotFoundException e) {
       return ResponseEntity.notFound().build();

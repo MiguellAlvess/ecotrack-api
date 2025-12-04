@@ -2,7 +2,7 @@ package br.db.ecotrack.ecotrack_api.domain.entity;
 
 import java.time.LocalDate;
 import br.db.ecotrack.ecotrack_api.domain.enums.DisposalDestination;
-import br.db.ecotrack.ecotrack_api.domain.enums.MeasurementUnit;
+import br.db.ecotrack.ecotrack_api.domain.enums.MaterialType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -31,12 +31,15 @@ public class Disposal {
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
   private Long disposalId;
 
+  @Column(nullable = false, length = 50)
+  private String disposalProduct;
+
   @Column(nullable = false)
-  private Double quantity;
+  private Integer quantity;
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false, length = 20)
-  private MeasurementUnit unit;
+  private MaterialType materialType;
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false, length = 20)
@@ -48,8 +51,4 @@ public class Disposal {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id", nullable = false)
   private User user;
-
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "material_id", nullable = false)
-  private Material material;
 }
