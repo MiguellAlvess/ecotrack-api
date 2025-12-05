@@ -7,7 +7,6 @@ import br.db.ecotrack.ecotrack_api.controller.response.PurchaseResponseDto;
 import br.db.ecotrack.ecotrack_api.controller.response.PurchaseResponseMetricsDto;
 import br.db.ecotrack.ecotrack_api.domain.entity.Purchase;
 import br.db.ecotrack.ecotrack_api.domain.entity.User;
-import br.db.ecotrack.ecotrack_api.domain.enums.MaterialType;
 import br.db.ecotrack.ecotrack_api.mapper.PurchaseMapper;
 import br.db.ecotrack.ecotrack_api.repository.PurchaseRepository;
 import jakarta.persistence.EntityNotFoundException;
