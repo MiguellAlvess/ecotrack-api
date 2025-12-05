@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import br.db.ecotrack.ecotrack_api.controller.request.PurchaseRequestDto;
 import br.db.ecotrack.ecotrack_api.controller.response.PurchaseResponseDto;
+import br.db.ecotrack.ecotrack_api.controller.response.PurchaseResponseMetricsDto;
 import br.db.ecotrack.ecotrack_api.service.PurchaseService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -46,11 +47,17 @@ public class PurchaseController {
     }
   }
 
-  @GetMapping
-  public ResponseEntity<List<PurchaseResponseDto>> getAllPurchases() {
-    List<PurchaseResponseDto> purchases = purchaseService.getAllPurchasesForCurrentUser();
-    return ResponseEntity.ok(purchases);
-  }
+    @GetMapping
+    public ResponseEntity<List<PurchaseResponseDto>> getAllPurchases() {
+        List<PurchaseResponseDto> purchases = purchaseService.getAllPurchasesForCurrentUser();
+        return ResponseEntity.ok(purchases);
+    }
+
+    @GetMapping("/metrics")
+    public ResponseEntity<PurchaseResponseMetricsDto> getTotalItensPurchased() {
+        PurchaseResponseMetricsDto purchaseMetricsDto = purchaseService.getTotalItensPurchased();
+        return ResponseEntity.ok(purchaseMetricsDto);
+    }
 
   @DeleteMapping("/{purchaseId}")
   public ResponseEntity<Void> deletePurchase(@PathVariable Long purchaseId) {
