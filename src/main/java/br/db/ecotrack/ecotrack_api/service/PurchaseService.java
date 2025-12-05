@@ -56,45 +56,45 @@ public class PurchaseService {
         .toList();
   }
 
-    @Transactional
-    public void deletePurchase(Long purchaseId) {
-        Purchase purchase = findPurchaseByIdAndCurrentUser(purchaseId);
-        purchaseRepository.delete(purchase);
-    }
+  @Transactional
+  public void deletePurchase(Long purchaseId) {
+    Purchase purchase = findPurchaseByIdAndCurrentUser(purchaseId);
+    purchaseRepository.delete(purchase);
+  }
 
-    @Transactional(readOnly = true)
-    public PurchaseResponseMetricsDto getTotalItensPurchased(){
-        int totalQuantity =  getTotalQuantityPurchases();
-        return new PurchaseResponseMetricsDto(totalQuantity);
-    }
+  @Transactional(readOnly = true)
+  public PurchaseResponseMetricsDto getTotalItensPurchased() {
+    int totalQuantity = getTotalQuantityPurchases();
+    return new PurchaseResponseMetricsDto(totalQuantity);
+  }
 
   private Purchase findPurchaseByIdAndCurrentUser(Long id) {
     User currentUser = currentUserService.getCurrentUserEntity();
     Purchase purchase = purchaseRepository.findById(id)
         .orElseThrow(() -> new EntityNotFoundException("Compra não encontrada com o id: " + id));
 
-        if (!purchase.getUser().getUserId().equals(currentUser.getUserId())) {
-            throw new EntityNotFoundException("Compra não encontrada com o id: " + id);
-        }
-        return purchase;
+    if (!purchase.getUser().getUserId().equals(currentUser.getUserId())) {
+      throw new EntityNotFoundException("Compra não encontrada com o id: " + id);
     }
+    return purchase;
+  }
 
-    private List<Purchase> getPurchasesByDateRange(){
-        LocalDate endDate = LocalDate.now();
-        LocalDate startDate  = endDate.minusDays(30);
+  private List<Purchase> getPurchasesByDateRange() {
+    LocalDate endDate = LocalDate.now();
+    LocalDate startDate = endDate.minusDays(30);
 
-        User currentUser = currentUserService.getCurrentUserEntity();
+    User currentUser = currentUserService.getCurrentUserEntity();
 
-        return purchaseRepository.findByUserAndPurchaseDateBetween(currentUser, startDate, endDate);
-    }
+    return purchaseRepository.findByUserAndPurchaseDateBetween(currentUser, startDate, endDate);
+  }
 
-    public int getTotalQuantityPurchases(){
-      List <Purchase> purchasesWithinRange = getPurchasesByDateRange();
-      
-      int totalQuantity = purchasesWithinRange.stream().map(Purchase::getQuantity)
-      .reduce(0, Integer::sum); 
-        
-      return totalQuantity;
-    }
+  public int getTotalQuantityPurchases() {
+    List<Purchase> purchasesWithinRange = getPurchasesByDateRange();
 
+    int totalQuantity = purchasesWithinRange.stream()
+        .mapToInt(Purchase::getQuantity)
+        .sum();
+
+    return totalQuantity;
+  }
 }

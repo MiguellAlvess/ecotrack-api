@@ -33,39 +33,45 @@ public class PurchaseController {
       PurchaseResponseDto purchaseDTO = purchaseService.createPurchase(purchaseRequestDto);
       return ResponseEntity.status(HttpStatus.CREATED).body(purchaseDTO);
     } catch (EntityNotFoundException e) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body("Erro ao processar a requisição");
     }
   }
 
   @GetMapping("/{purchaseId}")
-  public ResponseEntity<PurchaseResponseDto> getPurchaseById(@PathVariable Long purchaseId) {
+  public ResponseEntity<?> getPurchaseById(@PathVariable Long purchaseId) {
     try {
       PurchaseResponseDto purchaseDTO = purchaseService.getPurchaseById(purchaseId);
       return ResponseEntity.ok(purchaseDTO);
     } catch (EntityNotFoundException e) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
   }
 
-    @GetMapping
-    public ResponseEntity<List<PurchaseResponseDto>> getAllPurchases() {
-        List<PurchaseResponseDto> purchases = purchaseService.getAllPurchasesForCurrentUser();
-        return ResponseEntity.ok(purchases);
-    }
+  @GetMapping
+  public ResponseEntity<List<PurchaseResponseDto>> getAllPurchases() {
+    List<PurchaseResponseDto> purchases = purchaseService.getAllPurchasesForCurrentUser();
+    return ResponseEntity.ok(purchases);
+  }
 
-    @GetMapping("/metrics")
-    public ResponseEntity<PurchaseResponseMetricsDto> getTotalItensPurchased() {
-        PurchaseResponseMetricsDto purchaseMetricsDto = purchaseService.getTotalItensPurchased();
-        return ResponseEntity.ok(purchaseMetricsDto);
+  @GetMapping("/metrics")
+  public ResponseEntity<?> getTotalItensPurchased() {
+    try {
+      PurchaseResponseMetricsDto purchaseMetricsDto = purchaseService.getTotalItensPurchased();
+      return ResponseEntity.ok(purchaseMetricsDto);
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body("Erro ao processar a requisição: " + e.getMessage());
     }
+  }
 
   @DeleteMapping("/{purchaseId}")
-  public ResponseEntity<Void> deletePurchase(@PathVariable Long purchaseId) {
+  public ResponseEntity<?> deletePurchase(@PathVariable Long purchaseId) {
     try {
       purchaseService.deletePurchase(purchaseId);
       return ResponseEntity.noContent().build();
     } catch (EntityNotFoundException e) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
   }
 }
