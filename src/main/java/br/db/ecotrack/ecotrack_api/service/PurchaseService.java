@@ -7,12 +7,16 @@ import br.db.ecotrack.ecotrack_api.controller.response.PurchaseResponseDto;
 import br.db.ecotrack.ecotrack_api.controller.response.PurchaseResponseMetricsDto;
 import br.db.ecotrack.ecotrack_api.domain.entity.Purchase;
 import br.db.ecotrack.ecotrack_api.domain.entity.User;
+import br.db.ecotrack.ecotrack_api.domain.enums.MaterialType;
 import br.db.ecotrack.ecotrack_api.mapper.PurchaseMapper;
 import br.db.ecotrack.ecotrack_api.repository.PurchaseRepository;
 import jakarta.persistence.EntityNotFoundException;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.summingInt;
 
 @Service
 public class PurchaseService {
@@ -64,8 +68,9 @@ public class PurchaseService {
 
   @Transactional(readOnly = true)
   public PurchaseResponseMetricsDto getTotalItensPurchased() {
-    int totalQuantity = getTotalQuantityPurchases();
-    return new PurchaseResponseMetricsDto(totalQuantity);
+    int totalQuantityCurrentMonth = getTotalQuantityPurchases();
+    Map<String, Integer> materialAmountSummary = aggregatePurchaseByMaterial();
+    return new PurchaseResponseMetricsDto(totalQuantityCurrentMonth, materialAmountSummary);
   }
 
   private Purchase findPurchaseByIdAndCurrentUser(Long id) {
@@ -89,12 +94,21 @@ public class PurchaseService {
   }
 
   public int getTotalQuantityPurchases() {
-    List<Purchase> purchasesWithinRange = getPurchasesByDateRange();
+    List<Purchase> lastMonthPurchases = getPurchasesByDateRange();
 
-    int totalQuantity = purchasesWithinRange.stream()
+    int totalQuantity = lastMonthPurchases.stream()
         .mapToInt(Purchase::getQuantity)
         .sum();
 
     return totalQuantity;
+  }
+
+  public Map<String, Integer> aggregatePurchaseByMaterial() {
+    List<Purchase> lastMonthPurchases = getPurchasesByDateRange();
+
+    Map<String, Integer> materialQuantity = lastMonthPurchases.stream()
+        .collect(groupingBy(p -> p.getMaterialType().getTypeName(), summingInt(Purchase::getQuantity)));
+
+    return materialQuantity;
   }
 }

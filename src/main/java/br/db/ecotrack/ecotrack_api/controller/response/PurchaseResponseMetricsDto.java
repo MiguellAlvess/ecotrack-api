@@ -1,4 +1,8 @@
 package br.db.ecotrack.ecotrack_api.controller.response;
 
-public record PurchaseResponseMetricsDto(int totalQuantity) {
+import java.util.Map;
+
+public record PurchaseResponseMetricsDto(
+    int totalQuantityCurrentMonth,
+    Map<String, Integer> materialAmountSummary) {
 }
