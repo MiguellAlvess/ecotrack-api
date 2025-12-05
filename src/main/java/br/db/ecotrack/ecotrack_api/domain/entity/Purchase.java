@@ -3,7 +3,7 @@ package br.db.ecotrack.ecotrack_api.domain.entity;
 import java.time.LocalDate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import br.db.ecotrack.ecotrack_api.domain.enums.MeasurementUnit;
+import br.db.ecotrack.ecotrack_api.domain.enums.MaterialType;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
@@ -30,12 +30,15 @@ public class Purchase {
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
   private Long purchaseId;
 
+  @Column(nullable = false, length = 50)
+  private String purchaseProduct;
+
   @Column(nullable = false)
-  private Double quantity;
+  private Integer quantity;
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false, length = 20)
-  private MeasurementUnit unit;
+  private MaterialType materialType;
 
   @Column(nullable = false)
   private LocalDate purchaseDate;
@@ -43,9 +46,4 @@ public class Purchase {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id", nullable = false)
   private User user;
-
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "material_id", nullable = false)
-  private Material material;
-
 }

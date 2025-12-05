@@ -58,7 +58,6 @@ public class SecurityConfig {
             .requestMatchers(PathRequest.toH2Console()).permitAll()
             .requestMatchers(PUBLIC_PATHS).permitAll()
             .requestMatchers("/api/users/**").authenticated()
-            .requestMatchers("/api/materials/**").authenticated()
             .requestMatchers("/api/disposals/**").authenticated()
             .anyRequest().authenticated())
         .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))

@@ -10,10 +10,8 @@ import br.db.ecotrack.ecotrack_api.domain.entity.Disposal;
 @Mapper(componentModel = "spring")
 public interface DisposalMapper {
 
-  @Mapping(target = "materialType", source = "material.type")
   DisposalResponseDto toDto(Disposal disposal);
 
-  @Mapping(target = "material", ignore = true)
   @Mapping(target = "user", ignore = true)
   @Mapping(target = "disposalId", ignore = true)
   Disposal toEntity(DisposalRequestDto disposalRequestDto);
