@@ -78,7 +78,7 @@ public class PurchaseService {
         .orElseThrow(() -> new EntityNotFoundException("Compra não encontrada com o id: " + id));
 
     if (!purchase.getUser().getUserId().equals(currentUser.getUserId())) {
-      throw new EntityNotFoundException("Compra não encontrada com o id: " + id);
+      throw new EntityNotFoundException("Compra não encontrada");
     }
     return purchase;
   }
