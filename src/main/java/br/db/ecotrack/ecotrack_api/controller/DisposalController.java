@@ -3,7 +3,9 @@ package br.db.ecotrack.ecotrack_api.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import br.db.ecotrack.ecotrack_api.controller.request.DisposalRequestDto;
+import br.db.ecotrack.ecotrack_api.controller.response.DisposalResponseDestinationMetricsDto;
 import br.db.ecotrack.ecotrack_api.controller.response.DisposalResponseDto;
+import br.db.ecotrack.ecotrack_api.controller.response.DisposalResponseMetricsDto;
 import br.db.ecotrack.ecotrack_api.service.DisposalService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -52,6 +54,26 @@ public class DisposalController {
   public ResponseEntity<List<DisposalResponseDto>> getAllDisposals() {
     List<DisposalResponseDto> userDisposals = disposalService.getAllDisposalsForCurrentUser();
     return ResponseEntity.ok(userDisposals);
+  }
+
+  @GetMapping("/metrics")
+  public ResponseEntity<?> getTotalItensDisposal() {
+    try {
+      DisposalResponseMetricsDto disposalMetricsDto = disposalService.getTotalItensDisposal();
+      return ResponseEntity.ok(disposalMetricsDto);
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body("Erro ao processar a requisição: " + e.getMessage());
+    }
+  }
+
+  @GetMapping("/metrics/destination")
+  public ResponseEntity<?> getMostUsedDestination() {
+    try {
+      DisposalResponseDestinationMetricsDto dto = disposalService.getMostUsedDestinationDisposal();
+      return ResponseEntity.ok(dto);
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body("Erro ao processar a requisição: " + e.getMessage());
+    }
   }
 
   @DeleteMapping("/{disposalId}")

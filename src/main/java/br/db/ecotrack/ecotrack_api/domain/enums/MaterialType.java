@@ -1,19 +1,20 @@
 package br.db.ecotrack.ecotrack_api.domain.enums;
 
 public enum MaterialType {
-    PLASTIC("Plástico"),
-    GLASS("Vidro"),
-    METAL("Metal"),
-    PAPER("Papel"),
-    ORGANIC("Orgânico");
+  PLASTIC("Plástico"),
+  GLASS("Vidro"),
+  METAL("Metal"),
+  PAPER("Papel"),
+  ORGANIC("Orgânico"),
+  NOT_RECYCLABLE("Não Reciclável");
 
-    private final String typeName;
+  private final String typeName;
 
-    MaterialType(String typeName) {
-        this.typeName = typeName;
-    }
+  MaterialType(String typeName) {
+    this.typeName = typeName;
+  }
 
-    public String getTypeName() {
-        return typeName;
-    }
+  public String getTypeName() {
+    return typeName;
+  }
 }
