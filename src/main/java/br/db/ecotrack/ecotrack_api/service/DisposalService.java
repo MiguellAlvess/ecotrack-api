@@ -68,7 +68,7 @@ public class DisposalService {
 
   @Transactional(readOnly = true)
   public DisposalResponseMetricsDto getTotalItensDisposal() {
-    int totalQuantityCurrentMonth = getTotalQuantityDisposales();
+    int totalQuantityCurrentMonth = getTotalQuantityDisposals();
     Map<String, Integer> materialAmountSummary = aggregateDisposalByMaterial();
     return new DisposalResponseMetricsDto(totalQuantityCurrentMonth, materialAmountSummary);
   }
@@ -100,7 +100,7 @@ public class DisposalService {
     return disposalRepository.findByUserAndDisposalDateBetween(currentUser, startDate, endDate);
   }
 
-  public int getTotalQuantityDisposales() {
+  public int getTotalQuantityDisposals() {
     List<Disposal> lastMonthDisposales = getDisposalsByDateRange();
 
     int totalQuantity = lastMonthDisposales.stream()

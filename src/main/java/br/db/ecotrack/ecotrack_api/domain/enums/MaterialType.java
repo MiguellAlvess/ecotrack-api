@@ -6,7 +6,7 @@ public enum MaterialType {
   METAL("Metal"),
   PAPER("Papel"),
   ORGANIC("Orgânico"),
-  NOT_RECYCLABLE("Não Reciclavel");
+  NOT_RECYCLABLE("Não Reciclável");
 
   private final String typeName;
 
