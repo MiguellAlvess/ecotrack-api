@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import br.db.ecotrack.ecotrack_api.controller.request.PurchaseRequestDto;
@@ -93,15 +92,13 @@ public class PurchaseServiceTest {
         when(purchaseRepository.save(purchaseEntity)).thenReturn(purchaseSaved);
         when(purchaseMapper.toDto(purchaseSaved)).thenReturn(purchaseResponseDto);
 
-        // chamar método do service
         PurchaseResponseDto result = purchaseService.createPurchase(purchaseRequestDto);
 
-        // verifica
         assertNotNull(result);
         assertEquals(2L, result.purchaseId());
         assertEquals("Garrafa", result.purchaseProduct());
+        assertEquals(user, purchaseEntity.getUser());
 
-        // garante interações,prâmetros na ordem correta de execução
         verify(currentUserService).getCurrentUserEntity();
         verify(purchaseMapper).toEntity(purchaseRequestDto);
         verify(purchaseRepository).save(purchaseEntity);
@@ -117,7 +114,7 @@ public class PurchaseServiceTest {
         PurchaseResponseDto result = purchaseService.getPurchaseById(2L);
 
         assertNotNull(result);
-        assertEquals(purchaseResponseDto.purchaseId(), result.purchaseId());
+        assertEquals(purchaseResponseDto, result);
 
         verify(currentUserService).getCurrentUserEntity();
         verify(purchaseRepository).findById(2L);
@@ -136,18 +133,18 @@ public class PurchaseServiceTest {
 
         verify(currentUserService).getCurrentUserEntity();
         verify(purchaseRepository).findById(50L);
-        verifyNoMoreInteractions(purchaseMapper);
+        verifyNoInteractions(purchaseMapper);
     }
 
     @Test
-    void getById_shouldThrowException_WhenPurchaseBelongToAnotherUser(){
+    void getById_shouldThrowException_WhenPurchaseBelongToAnotherUser() {
         User anotherUser = new User();
         anotherUser.setUserId(3L);
 
         Purchase purchaseFromAnotherUser = new Purchase();
         purchaseFromAnotherUser.setPurchaseId(3L);
         purchaseFromAnotherUser.setUser(anotherUser);
-        
+
         when(currentUserService.getCurrentUserEntity()).thenReturn(user);
         when(purchaseRepository.findById(3L)).thenReturn(Optional.of(purchaseFromAnotherUser));
 
@@ -158,11 +155,11 @@ public class PurchaseServiceTest {
 
         verify(currentUserService).getCurrentUserEntity();
         verify(purchaseRepository).findById(3L);
-        verifyNoMoreInteractions(purchaseMapper);
+        verifyNoInteractions(purchaseMapper);
     }
 
     @Test
-    void getAll_shouldReturnListOfPurchaseResponseDto_WhenUserHasPurchases(){
+    void getAll_shouldReturnListOfPurchaseResponseDto_WhenUserHasPurchases() {
         List<Purchase> purchases = List.of(purchaseSaved);
 
         when(currentUserService.getCurrentUserEntity()).thenReturn(user);
@@ -180,7 +177,7 @@ public class PurchaseServiceTest {
     }
 
     @Test
-    void getAll_shouldReturnEmptyListOfPurchaseResponseDto_WhenUserHasNotPurchases(){
+    void getAll_shouldReturnEmptyListOfPurchaseResponseDto_WhenUserHasNotPurchases() {
         when(currentUserService.getCurrentUserEntity()).thenReturn(user);
         when(purchaseRepository.findByUser(user)).thenReturn(List.of());
 
@@ -192,5 +189,55 @@ public class PurchaseServiceTest {
         verify(currentUserService).getCurrentUserEntity();
         verify(purchaseRepository).findByUser(user);
         verifyNoInteractions(purchaseMapper);
+    }
+
+    @Test
+    void deleteById_shouldDeletePurchase_WhenPurchaseExistsAndBelongToUser() {
+        when(currentUserService.getCurrentUserEntity()).thenReturn(user);
+        when(purchaseRepository.findById(2L)).thenReturn(Optional.of(purchaseSaved));
+
+        purchaseService.deletePurchaseById(2L);
+
+        verify(currentUserService).getCurrentUserEntity();
+        verify(purchaseRepository).findById(2L);
+        verify(purchaseRepository).delete(purchaseSaved);
+        verifyNoInteractions(purchaseMapper);
+    }
+
+    @Test
+    void deleteById_shouldThrowException_WhenPurchaseDoesNotExist() {
+        when(currentUserService.getCurrentUserEntity()).thenReturn(user);
+        when(purchaseRepository.findById(50L)).thenReturn(Optional.empty());
+
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
+                () -> purchaseService.deletePurchaseById(50L));
+
+        assertEquals("Compra não encontrada com o id: 50", exception.getMessage());
+
+        verify(currentUserService).getCurrentUserEntity();
+        verify(purchaseRepository).findById(50L);
+        verifyNoMoreInteractions(purchaseRepository);
+    }
+
+    @Test
+    void deleteById_shouldThrowException_WhenPurchaseBelongToAnotherUser() {
+        User anotherUser = new User();
+        anotherUser.setUserId(3L);
+
+        Purchase purchaseFromAnotherUser = new Purchase();
+        purchaseFromAnotherUser.setPurchaseId(3L);
+        purchaseFromAnotherUser.setUser(anotherUser);
+
+        when(currentUserService.getCurrentUserEntity()).thenReturn(user);
+        when(purchaseRepository.findById(3L)).thenReturn(Optional.of(purchaseFromAnotherUser));
+
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
+                () -> purchaseService.deletePurchaseById(3L));
+
+        assertEquals("Compra não encontrada", exception.getMessage());
+
+        verify(currentUserService).getCurrentUserEntity();
+        verify(purchaseRepository).findById(3L);
+        verifyNoMoreInteractions(purchaseRepository);
     }
 }

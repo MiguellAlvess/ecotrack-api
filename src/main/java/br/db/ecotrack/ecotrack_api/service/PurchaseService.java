@@ -60,7 +60,7 @@ public class PurchaseService {
   }
 
   @Transactional
-  public void deletePurchase(Long purchaseId) {
+  public void deletePurchaseById(Long purchaseId) {
     Purchase purchase = findPurchaseByIdAndCurrentUser(purchaseId);
     purchaseRepository.delete(purchase);
   }

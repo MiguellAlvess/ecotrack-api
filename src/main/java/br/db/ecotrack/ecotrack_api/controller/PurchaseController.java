@@ -68,7 +68,7 @@ public class PurchaseController {
   @DeleteMapping("/{purchaseId}")
   public ResponseEntity<?> deletePurchase(@PathVariable Long purchaseId) {
     try {
-      purchaseService.deletePurchase(purchaseId);
+      purchaseService.deletePurchaseById(purchaseId);
       return ResponseEntity.noContent().build();
     } catch (EntityNotFoundException e) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
