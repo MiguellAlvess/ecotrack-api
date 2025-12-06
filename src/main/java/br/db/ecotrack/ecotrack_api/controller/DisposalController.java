@@ -2,10 +2,12 @@ package br.db.ecotrack.ecotrack_api.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import br.db.ecotrack.ecotrack_api.controller.request.DisposalRequestDto;
-import br.db.ecotrack.ecotrack_api.controller.response.DisposalResponseDestinationMetricsDto;
-import br.db.ecotrack.ecotrack_api.controller.response.DisposalResponseDto;
-import br.db.ecotrack.ecotrack_api.controller.response.DisposalResponseMetricsDto;
+
+import br.db.ecotrack.ecotrack_api.controller.dto.metrics.DisposalResponseDestinationMetricsDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.metrics.DisposalResponseMetricsDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.request.DisposalRequestDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.response.DisposalResponseDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.update.DisposalUpdateDto;
 import br.db.ecotrack.ecotrack_api.service.DisposalService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import java.util.List;
 
@@ -73,6 +76,17 @@ public class DisposalController {
       return ResponseEntity.ok(dto);
     } catch (Exception e) {
       return ResponseEntity.badRequest().body("Erro ao processar a requisição: " + e.getMessage());
+    }
+  }
+
+  @PatchMapping("/{disposalId}")
+  public ResponseEntity<DisposalResponseDto> updateDisposal(@PathVariable Long disposalId,
+      @RequestBody DisposalUpdateDto disposalUpdateDto) {
+    try {
+      DisposalResponseDto updateDiposalDto = disposalService.updateDisposal(disposalId, disposalUpdateDto);
+      return ResponseEntity.ok(updateDiposalDto);
+    } catch (EntityNotFoundException e) {
+      return ResponseEntity.notFound().build();
     }
   }
 

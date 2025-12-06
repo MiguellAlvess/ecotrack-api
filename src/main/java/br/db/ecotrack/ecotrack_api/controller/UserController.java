@@ -8,8 +8,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import br.db.ecotrack.ecotrack_api.controller.request.UserRequestDto;
-import br.db.ecotrack.ecotrack_api.controller.response.UserResponseDto;
+
+import br.db.ecotrack.ecotrack_api.controller.dto.request.UserRequestDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.response.UserResponseDto;
 import br.db.ecotrack.ecotrack_api.service.CurrentUserService;
 import br.db.ecotrack.ecotrack_api.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -38,7 +39,8 @@ public class UserController {
   }
 
   @PatchMapping("/{id}")
-  public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id, @RequestBody @Valid UserRequestDto userRequestDto) {
+  public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id,
+      @RequestBody @Valid UserRequestDto userRequestDto) {
     try {
       UserResponseDto updatedUserDto = userService.updateUser(id, userRequestDto);
       return ResponseEntity.ok(updatedUserDto);

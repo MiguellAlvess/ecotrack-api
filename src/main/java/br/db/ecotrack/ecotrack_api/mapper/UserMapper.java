@@ -3,8 +3,8 @@ package br.db.ecotrack.ecotrack_api.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import br.db.ecotrack.ecotrack_api.controller.request.UserRequestDto;
-import br.db.ecotrack.ecotrack_api.controller.response.UserResponseDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.request.UserRequestDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.response.UserResponseDto;
 import br.db.ecotrack.ecotrack_api.domain.entity.User;
 
 @Mapper(componentModel = "spring")

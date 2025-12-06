@@ -1,4 +1,4 @@
-package br.db.ecotrack.ecotrack_api.controller.response;
+package br.db.ecotrack.ecotrack_api.controller.dto.response;
 
 public record LoginResponseDto(
 

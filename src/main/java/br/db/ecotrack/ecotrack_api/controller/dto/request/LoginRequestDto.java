@@ -1,4 +1,4 @@
-package br.db.ecotrack.ecotrack_api.controller.request;
+package br.db.ecotrack.ecotrack_api.controller.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

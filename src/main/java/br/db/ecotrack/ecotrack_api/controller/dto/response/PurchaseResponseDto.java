@@ -1,4 +1,4 @@
-package br.db.ecotrack.ecotrack_api.controller.response;
+package br.db.ecotrack.ecotrack_api.controller.dto.response;
 
 import java.time.LocalDate;
 import br.db.ecotrack.ecotrack_api.domain.enums.MaterialType;

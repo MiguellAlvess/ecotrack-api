@@ -9,10 +9,10 @@ import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.db.ecotrack.ecotrack_api.controller.request.LoginRequestDto;
-import br.db.ecotrack.ecotrack_api.controller.request.UserRequestDto;
-import br.db.ecotrack.ecotrack_api.controller.response.LoginResponseDto;
-import br.db.ecotrack.ecotrack_api.controller.response.UserResponseDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.request.LoginRequestDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.request.UserRequestDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.response.LoginResponseDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.response.UserResponseDto;
 import br.db.ecotrack.ecotrack_api.domain.entity.User;
 import br.db.ecotrack.ecotrack_api.mapper.UserMapper;
 import br.db.ecotrack.ecotrack_api.repository.UserRepository;
