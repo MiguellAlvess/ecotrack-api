@@ -60,7 +60,7 @@ public class PurchaseService {
   }
 
   @Transactional
-  public void deletePurchase(Long purchaseId) {
+  public void deletePurchaseById(Long purchaseId) {
     Purchase purchase = findPurchaseByIdAndCurrentUser(purchaseId);
     purchaseRepository.delete(purchase);
   }
@@ -78,7 +78,7 @@ public class PurchaseService {
         .orElseThrow(() -> new EntityNotFoundException("Compra não encontrada com o id: " + id));
 
     if (!purchase.getUser().getUserId().equals(currentUser.getUserId())) {
-      throw new EntityNotFoundException("Compra não encontrada com o id: " + id);
+      throw new EntityNotFoundException("Compra não encontrada");
     }
     return purchase;
   }
