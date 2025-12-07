@@ -1,4 +1,4 @@
-package br.db.ecotrack.ecotrack_api.controller.dto.response;
+package br.db.ecotrack.ecotrack_api.controller.dto.user;
 
 public record UserResponseDto(
     Long userId,

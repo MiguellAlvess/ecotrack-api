@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.db.ecotrack.ecotrack_api.controller.dto.request.LoginRequestDto;
-import br.db.ecotrack.ecotrack_api.controller.dto.request.UserRequestDto;
-import br.db.ecotrack.ecotrack_api.controller.dto.response.LoginResponseDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.user.LoginRequestDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.user.LoginResponseDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.user.UserRequestDto;
 import br.db.ecotrack.ecotrack_api.service.AuthService;
 import jakarta.validation.Valid;
 

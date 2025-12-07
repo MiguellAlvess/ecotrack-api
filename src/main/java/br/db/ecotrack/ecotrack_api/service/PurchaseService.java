@@ -3,10 +3,10 @@ package br.db.ecotrack.ecotrack_api.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.db.ecotrack.ecotrack_api.controller.dto.metrics.PurchaseResponseMetricsDto;
-import br.db.ecotrack.ecotrack_api.controller.dto.request.PurchaseRequestDto;
-import br.db.ecotrack.ecotrack_api.controller.dto.response.PurchaseResponseDto;
-import br.db.ecotrack.ecotrack_api.controller.dto.update.PurchaseUpdateDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.purchase.PurchaseRequestDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.purchase.PurchaseResponseDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.purchase.PurchaseUpdateDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.purchase.metrics.PurchaseResponseMetricsDto;
 import br.db.ecotrack.ecotrack_api.domain.entity.Purchase;
 import br.db.ecotrack.ecotrack_api.domain.entity.User;
 import br.db.ecotrack.ecotrack_api.mapper.PurchaseMapper;

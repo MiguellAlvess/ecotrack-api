@@ -4,8 +4,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.db.ecotrack.ecotrack_api.controller.dto.request.UserRequestDto;
-import br.db.ecotrack.ecotrack_api.controller.dto.response.UserResponseDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.user.UserRequestDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.user.UserResponseDto;
 import br.db.ecotrack.ecotrack_api.domain.entity.User;
 import br.db.ecotrack.ecotrack_api.mapper.UserMapper;
 import br.db.ecotrack.ecotrack_api.repository.UserRepository;

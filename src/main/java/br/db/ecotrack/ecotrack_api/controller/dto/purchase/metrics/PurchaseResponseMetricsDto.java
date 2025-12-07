@@ -1,4 +1,4 @@
-package br.db.ecotrack.ecotrack_api.controller.dto.metrics;
+package br.db.ecotrack.ecotrack_api.controller.dto.purchase.metrics;
 
 import java.util.Map;
 

@@ -4,10 +4,10 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import br.db.ecotrack.ecotrack_api.controller.dto.metrics.PurchaseResponseMetricsDto;
-import br.db.ecotrack.ecotrack_api.controller.dto.request.PurchaseRequestDto;
-import br.db.ecotrack.ecotrack_api.controller.dto.response.PurchaseResponseDto;
-import br.db.ecotrack.ecotrack_api.controller.dto.update.PurchaseUpdateDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.purchase.PurchaseRequestDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.purchase.PurchaseResponseDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.purchase.PurchaseUpdateDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.purchase.metrics.PurchaseResponseMetricsDto;
 import br.db.ecotrack.ecotrack_api.service.PurchaseService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;

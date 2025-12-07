@@ -1,4 +1,4 @@
-package br.db.ecotrack.ecotrack_api.controller.dto.update;
+package br.db.ecotrack.ecotrack_api.controller.dto.purchase;
 
 import java.time.LocalDate;
 

@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.db.ecotrack.ecotrack_api.controller.dto.request.UserRequestDto;
-import br.db.ecotrack.ecotrack_api.controller.dto.response.UserResponseDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.user.UserRequestDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.user.UserResponseDto;
 import br.db.ecotrack.ecotrack_api.service.CurrentUserService;
 import br.db.ecotrack.ecotrack_api.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
