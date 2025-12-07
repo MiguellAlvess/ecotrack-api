@@ -5,8 +5,10 @@ import org.springframework.stereotype.Service;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.DisposalRequestDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.DisposalResponseDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.DisposalUpdateDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalDestinationAmountSummaryDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalMaterialAmountSummaryDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalMostFrequentDestinationDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalRecyclingPercentage;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.TotalDisposalQuantityDto;
 import br.db.ecotrack.ecotrack_api.domain.entity.Disposal;
 import br.db.ecotrack.ecotrack_api.domain.entity.User;
@@ -98,6 +100,31 @@ public class DisposalService {
     return getMostUsedDestination()
         .map(entry -> new DisposalMostFrequentDestinationDto(entry.getKey(), entry.getValue()))
         .orElse(new DisposalMostFrequentDestinationDto("Nenhum destino encontrado", 0));
+  }
+
+  @Transactional(readOnly = true)
+  public DisposalDestinationAmountSummaryDto getDestinationAmountSummary() {
+    Map<String, Integer> destinationAmountSummary = aggregateDisposalByDestination();
+
+    return new DisposalDestinationAmountSummaryDto(destinationAmountSummary);
+  }
+
+  public DisposalRecyclingPercentage getRecyclingPercentage() {
+    Map<String, Integer> summary = aggregateDisposalByDestination();
+
+    int total = getTotalQuantityDisposals();
+
+    if (total == 0)
+      return new DisposalRecyclingPercentage(0.0);
+
+    int recyclable = summary.entrySet().stream()
+        .filter(e -> !e.getKey().equalsIgnoreCase("Rejeito"))
+        .mapToInt(Map.Entry::getValue)
+        .sum();
+
+    double percentage = Math.round(((recyclable * 100.0) / total) * 100.0) / 100.0;
+
+    return new DisposalRecyclingPercentage(percentage);
   }
 
   private Disposal findDisposalByIdAndCurrentUser(Long id) {
