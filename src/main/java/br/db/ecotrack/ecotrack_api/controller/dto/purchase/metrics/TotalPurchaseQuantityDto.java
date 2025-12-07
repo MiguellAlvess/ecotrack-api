@@ -1,5 +1,5 @@
 package br.db.ecotrack.ecotrack_api.controller.dto.purchase.metrics;
 
-public record TotalQuantityCurrentMonthDto(
+public record TotalPurchaseQuantityDto(
     int totalPurchasesCurrentMonth) {
 }

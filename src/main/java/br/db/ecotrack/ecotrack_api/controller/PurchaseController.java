@@ -7,8 +7,8 @@ import org.springframework.http.ResponseEntity;
 import br.db.ecotrack.ecotrack_api.controller.dto.purchase.PurchaseRequestDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.purchase.PurchaseResponseDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.purchase.PurchaseUpdateDto;
-import br.db.ecotrack.ecotrack_api.controller.dto.purchase.metrics.MaterialAmountSummaryDto;
-import br.db.ecotrack.ecotrack_api.controller.dto.purchase.metrics.TotalQuantityCurrentMonthDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.purchase.metrics.PurchaseMaterialAmountSummaryDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.purchase.metrics.TotalPurchaseQuantityDto;
 import br.db.ecotrack.ecotrack_api.service.PurchaseService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -62,7 +62,7 @@ public class PurchaseController {
   @GetMapping("/total-itens-purchased-30-days")
   public ResponseEntity<?> getTotalItensPurchased() {
     try {
-      TotalQuantityCurrentMonthDto totalQuantity = purchaseService.getTotalItensPurchased();
+      TotalPurchaseQuantityDto totalQuantity = purchaseService.getTotalItensPurchased();
       return ResponseEntity.ok(totalQuantity);
     } catch (Exception e) {
       return ResponseEntity.badRequest().body("Erro ao processar a requisição: " + e.getMessage());
@@ -72,7 +72,7 @@ public class PurchaseController {
   @GetMapping("/purchases-material-summary-30-days")
   public ResponseEntity<?> getPurchasesMaterialSummary() {
     try {
-      MaterialAmountSummaryDto materialSummary = purchaseService.getMaterialAmountSummaryDto();
+      PurchaseMaterialAmountSummaryDto materialSummary = purchaseService.getMaterialAmountSummaryDto();
       return ResponseEntity.ok(materialSummary);
     } catch (Exception e) {
       return ResponseEntity.badRequest().body("Erro ao processar a requisição: " + e.getMessage());
