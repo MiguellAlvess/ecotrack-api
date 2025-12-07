@@ -4,7 +4,6 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -32,10 +31,10 @@ import com.nimbusds.jose.proc.SecurityContext;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-  @Value("${rsa.public-key}")
+  @Value("${jwt.public.key}")
   private RSAPublicKey rsaPublicKey;
 
-  @Value("${rsa.private-key}")
+  @Value("${jwt.private.key}")
   private RSAPrivateKey rsaPrivateKey;
 
   private static final String[] PUBLIC_PATHS = {
@@ -55,7 +54,6 @@ public class SecurityConfig {
         .csrf(csrf -> csrf.disable())
         .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
         .authorizeHttpRequests(authorize -> authorize
-            .requestMatchers(PathRequest.toH2Console()).permitAll()
             .requestMatchers(PUBLIC_PATHS).permitAll()
             .requestMatchers("/api/users/**").authenticated()
             .requestMatchers("/api/disposals/**").authenticated()
