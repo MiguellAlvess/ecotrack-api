@@ -6,8 +6,9 @@ import org.springframework.web.bind.annotation.RestController;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.DisposalRequestDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.DisposalResponseDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.DisposalUpdateDto;
-import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalResponseDestinationMetricsDto;
-import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalResponseMetricsDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalMostFrequentDestinationDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.TotalDisposalQuantityDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalMaterialAmountSummaryDto;
 import br.db.ecotrack.ecotrack_api.service.DisposalService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -53,26 +54,36 @@ public class DisposalController {
     }
   }
 
-  @GetMapping
+  @GetMapping()
   public ResponseEntity<List<DisposalResponseDto>> getAllDisposals() {
     List<DisposalResponseDto> userDisposals = disposalService.getAllDisposalsForCurrentUser();
     return ResponseEntity.ok(userDisposals);
   }
 
-  @GetMapping("/metrics")
+  @GetMapping("/total-itens-disposed-30-days")
   public ResponseEntity<?> getTotalItensDisposal() {
     try {
-      DisposalResponseMetricsDto disposalMetricsDto = disposalService.getTotalItensDisposal();
+      TotalDisposalQuantityDto disposalMetricsDto = disposalService.getTotalItensDisposal();
       return ResponseEntity.ok(disposalMetricsDto);
     } catch (Exception e) {
       return ResponseEntity.badRequest().body("Erro ao processar a requisição: " + e.getMessage());
     }
   }
 
-  @GetMapping("/metrics/destination")
+  @GetMapping("/disposals-material-summary-30-days")
+  public ResponseEntity<?> getDisposalsMaterialSummary() {
+    try {
+      DisposalMaterialAmountSummaryDto disposalMetricsDto = disposalService.aggregateDisposalByMaterial();
+      return ResponseEntity.ok(disposalMetricsDto);
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body("Erro ao processar a requisição: " + e.getMessage());
+    }
+  }
+
+  @GetMapping("/disposal-most-frequent-destination")
   public ResponseEntity<?> getMostUsedDestination() {
     try {
-      DisposalResponseDestinationMetricsDto dto = disposalService.getMostUsedDestinationDisposal();
+      DisposalMostFrequentDestinationDto dto = disposalService.getMostUsedDestinationDisposal();
       return ResponseEntity.ok(dto);
     } catch (Exception e) {
       return ResponseEntity.badRequest().body("Erro ao processar a requisição: " + e.getMessage());
@@ -99,5 +110,4 @@ public class DisposalController {
       return ResponseEntity.notFound().build();
     }
   }
-
 }

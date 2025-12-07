@@ -6,7 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 import br.db.ecotrack.ecotrack_api.controller.dto.purchase.PurchaseRequestDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.purchase.PurchaseResponseDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.purchase.PurchaseUpdateDto;
-import br.db.ecotrack.ecotrack_api.controller.dto.purchase.metrics.PurchaseResponseMetricsDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.purchase.metrics.PurchaseMaterialAmountSummaryDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.purchase.metrics.TotalPurchaseQuantityDto;
 import br.db.ecotrack.ecotrack_api.domain.entity.Purchase;
 import br.db.ecotrack.ecotrack_api.domain.entity.User;
 import br.db.ecotrack.ecotrack_api.mapper.PurchaseMapper;
@@ -84,10 +85,19 @@ public class PurchaseService {
   }
 
   @Transactional(readOnly = true)
-  public PurchaseResponseMetricsDto getTotalItensPurchased() {
+  public TotalPurchaseQuantityDto getTotalItensPurchased() {
     int totalQuantityCurrentMonth = getTotalQuantityPurchases();
-    Map<String, Integer> materialAmountSummary = aggregatePurchaseByMaterial();
-    return new PurchaseResponseMetricsDto(totalQuantityCurrentMonth, materialAmountSummary);
+    return new TotalPurchaseQuantityDto(totalQuantityCurrentMonth);
+  }
+
+  @Transactional(readOnly = true)
+  public PurchaseMaterialAmountSummaryDto getMaterialAmountSummaryDto() {
+    List<Purchase> lastMonthPurchases = getPurchasesByDateRange();
+
+    Map<String, Integer> materialQuantity = lastMonthPurchases.stream()
+        .collect(groupingBy(p -> p.getMaterialType().getTypeName(), summingInt(Purchase::getQuantity)));
+
+    return new PurchaseMaterialAmountSummaryDto(materialQuantity);
   }
 
   private Purchase findPurchaseByIdAndCurrentUser(Long id) {
@@ -118,14 +128,5 @@ public class PurchaseService {
         .sum();
 
     return totalQuantity;
-  }
-
-  public Map<String, Integer> aggregatePurchaseByMaterial() {
-    List<Purchase> lastMonthPurchases = getPurchasesByDateRange();
-
-    Map<String, Integer> materialQuantity = lastMonthPurchases.stream()
-        .collect(groupingBy(p -> p.getMaterialType().getTypeName(), summingInt(Purchase::getQuantity)));
-
-    return materialQuantity;
   }
 }

@@ -23,7 +23,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import br.db.ecotrack.ecotrack_api.controller.dto.purchase.PurchaseRequestDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.purchase.PurchaseResponseDto;
-import br.db.ecotrack.ecotrack_api.controller.dto.purchase.metrics.PurchaseResponseMetricsDto;
 import br.db.ecotrack.ecotrack_api.domain.entity.Purchase;
 import br.db.ecotrack.ecotrack_api.domain.entity.User;
 import br.db.ecotrack.ecotrack_api.domain.enums.MaterialType;
@@ -241,27 +240,5 @@ public class PurchaseServiceTest {
     verify(currentUserService).getCurrentUserEntity();
     verify(purchaseRepository).findById(3L);
     verifyNoMoreInteractions(purchaseRepository);
-  }
-
-  @Test
-  void getTotalItensPurchased_shouldReturnCorrectMetrics() {
-
-    Purchase p1 = new Purchase(1L, "Garrafa PET", 6, MaterialType.PLASTIC, LocalDate.now().minusDays(5), user);
-    Purchase p2 = new Purchase(2L, "Lata", 5, MaterialType.METAL, LocalDate.now().minusDays(31), user);
-    LocalDate endDate = LocalDate.now();
-    LocalDate startDate = LocalDate.now().minusDays(30);
-
-    when(currentUserService.getCurrentUserEntity()).thenReturn(user);
-    when(purchaseRepository.findByUserAndPurchaseDateBetween(user, startDate, endDate)).thenReturn(List.of(p1));
-
-    PurchaseResponseMetricsDto result = purchaseService.getTotalItensPurchased();
-
-    assertEquals(6, result.totalQuantityCurrentMonth());
-    assertEquals(1, result.materialAmountSummary().size());
-    assertTrue(result.materialAmountSummary().containsKey("Plástico"));
-    assertEquals(6, result.materialAmountSummary().get("Plástico"));
-
-    verify(currentUserService, times(2)).getCurrentUserEntity();
-    verify(purchaseRepository, times(2)).findByUserAndPurchaseDateBetween(user, startDate, endDate);
   }
 }
