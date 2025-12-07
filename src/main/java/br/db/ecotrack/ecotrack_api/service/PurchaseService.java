@@ -2,9 +2,11 @@ package br.db.ecotrack.ecotrack_api.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import br.db.ecotrack.ecotrack_api.controller.request.PurchaseRequestDto;
-import br.db.ecotrack.ecotrack_api.controller.response.PurchaseResponseDto;
-import br.db.ecotrack.ecotrack_api.controller.response.PurchaseResponseMetricsDto;
+
+import br.db.ecotrack.ecotrack_api.controller.dto.purchase.PurchaseRequestDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.purchase.PurchaseResponseDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.purchase.PurchaseUpdateDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.purchase.metrics.PurchaseResponseMetricsDto;
 import br.db.ecotrack.ecotrack_api.domain.entity.Purchase;
 import br.db.ecotrack.ecotrack_api.domain.entity.User;
 import br.db.ecotrack.ecotrack_api.mapper.PurchaseMapper;
@@ -60,7 +62,23 @@ public class PurchaseService {
   }
 
   @Transactional
-  public void deletePurchaseById(Long purchaseId) {
+  public PurchaseResponseDto updatePurchase(Long id, PurchaseUpdateDto purchaseUpdateDto) {
+    Purchase purchase = findPurchaseByIdAndCurrentUser(id);
+
+    if (purchaseUpdateDto.purchaseProduct() != null)
+      purchase.setPurchaseProduct(purchaseUpdateDto.purchaseProduct());
+    if (purchaseUpdateDto.quantity() != null)
+      purchase.setQuantity(purchaseUpdateDto.quantity());
+    if (purchaseUpdateDto.materialType() != null)
+      purchase.setMaterialType(purchaseUpdateDto.materialType());
+    if (purchaseUpdateDto.purchaseDate() != null)
+      purchase.setPurchaseDate(purchaseUpdateDto.purchaseDate());
+
+    return purchaseMapper.toDto(purchaseRepository.save(purchase));
+  }
+
+  @Transactional
+  public void deletePurchase(Long purchaseId) {
     Purchase purchase = findPurchaseByIdAndCurrentUser(purchaseId);
     purchaseRepository.delete(purchase);
   }

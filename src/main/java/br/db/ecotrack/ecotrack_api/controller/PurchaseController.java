@@ -3,9 +3,11 @@ package br.db.ecotrack.ecotrack_api.controller;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import br.db.ecotrack.ecotrack_api.controller.request.PurchaseRequestDto;
-import br.db.ecotrack.ecotrack_api.controller.response.PurchaseResponseDto;
-import br.db.ecotrack.ecotrack_api.controller.response.PurchaseResponseMetricsDto;
+
+import br.db.ecotrack.ecotrack_api.controller.dto.purchase.PurchaseRequestDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.purchase.PurchaseResponseDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.purchase.PurchaseUpdateDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.purchase.metrics.PurchaseResponseMetricsDto;
 import br.db.ecotrack.ecotrack_api.service.PurchaseService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -65,10 +68,21 @@ public class PurchaseController {
     }
   }
 
+  @PatchMapping("/{purchaseId}")
+  public ResponseEntity<PurchaseResponseDto> updatePurchase(@PathVariable Long purchaseId,
+      @RequestBody PurchaseUpdateDto purchaseUpdateDto) {
+    try {
+      PurchaseResponseDto updatePurchaseDto = purchaseService.updatePurchase(purchaseId, purchaseUpdateDto);
+      return ResponseEntity.ok(updatePurchaseDto);
+    } catch (EntityNotFoundException e) {
+      return ResponseEntity.notFound().build();
+    }
+  }
+
   @DeleteMapping("/{purchaseId}")
   public ResponseEntity<?> deletePurchase(@PathVariable Long purchaseId) {
     try {
-      purchaseService.deletePurchaseById(purchaseId);
+      purchaseService.deletePurchase(purchaseId);
       return ResponseEntity.noContent().build();
     } catch (EntityNotFoundException e) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());

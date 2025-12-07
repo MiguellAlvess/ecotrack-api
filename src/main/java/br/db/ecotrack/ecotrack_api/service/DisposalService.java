@@ -1,10 +1,12 @@
 package br.db.ecotrack.ecotrack_api.service;
 
 import org.springframework.stereotype.Service;
-import br.db.ecotrack.ecotrack_api.controller.request.DisposalRequestDto;
-import br.db.ecotrack.ecotrack_api.controller.response.DisposalResponseDestinationMetricsDto;
-import br.db.ecotrack.ecotrack_api.controller.response.DisposalResponseDto;
-import br.db.ecotrack.ecotrack_api.controller.response.DisposalResponseMetricsDto;
+
+import br.db.ecotrack.ecotrack_api.controller.dto.disposal.DisposalRequestDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.disposal.DisposalResponseDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.disposal.DisposalUpdateDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalResponseDestinationMetricsDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalResponseMetricsDto;
 import br.db.ecotrack.ecotrack_api.domain.entity.Disposal;
 import br.db.ecotrack.ecotrack_api.domain.entity.User;
 import br.db.ecotrack.ecotrack_api.mapper.DisposalMapper;
@@ -58,6 +60,24 @@ public class DisposalService {
     return disposals.stream()
         .map(disposal -> disposalMapper.toDto(disposal))
         .toList();
+  }
+
+  @Transactional
+  public DisposalResponseDto updateDisposal(Long id, DisposalUpdateDto disposalUpdateDto) {
+    Disposal disposal = findDisposalByIdAndCurrentUser(id);
+
+    if (disposalUpdateDto.disposalProduct() != null)
+      disposal.setDisposalProduct(disposalUpdateDto.disposalProduct());
+    if (disposalUpdateDto.quantity() != null)
+      disposal.setQuantity(disposalUpdateDto.quantity());
+    if (disposalUpdateDto.materialType() != null)
+      disposal.setMaterialType(disposalUpdateDto.materialType());
+    if (disposalUpdateDto.destination() != null)
+      disposal.setDestination(disposalUpdateDto.destination());
+    if (disposalUpdateDto.disposalDate() != null)
+      disposal.setDisposalDate(disposalUpdateDto.disposalDate());
+
+    return disposalMapper.toDto(disposalRepository.save(disposal));
   }
 
   @Transactional

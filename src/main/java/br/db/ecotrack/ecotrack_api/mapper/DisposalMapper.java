@@ -3,8 +3,8 @@ package br.db.ecotrack.ecotrack_api.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import br.db.ecotrack.ecotrack_api.controller.request.DisposalRequestDto;
-import br.db.ecotrack.ecotrack_api.controller.response.DisposalResponseDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.disposal.DisposalRequestDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.disposal.DisposalResponseDto;
 import br.db.ecotrack.ecotrack_api.domain.entity.Disposal;
 
 @Mapper(componentModel = "spring")
