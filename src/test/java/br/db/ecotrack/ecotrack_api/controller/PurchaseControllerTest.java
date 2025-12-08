@@ -1,6 +1,9 @@
 package br.db.ecotrack.ecotrack_api.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -10,12 +13,14 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -23,13 +28,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import br.db.ecotrack.ecotrack_api.controller.request.PurchaseRequestDto;
-import br.db.ecotrack.ecotrack_api.controller.response.PurchaseResponseDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.purchase.PurchaseRequestDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.purchase.PurchaseResponseDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.purchase.PurchaseUpdateDto;
+import br.db.ecotrack.ecotrack_api.domain.entity.Purchase;
 import br.db.ecotrack.ecotrack_api.domain.enums.MaterialType;
 import br.db.ecotrack.ecotrack_api.service.PurchaseService;
+import jakarta.persistence.EntityNotFoundException;
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 public class PurchaseControllerTest {
 
     @Autowired
@@ -98,14 +106,13 @@ public class PurchaseControllerTest {
                 .andExpect(jsonPath("$.purchaseProduct").value(responseDto.purchaseProduct()))
                 .andExpect(jsonPath("$.quantity").value(responseDto.quantity()))
                 .andExpect(jsonPath("$.materialType").value(responseDto.materialType().toString()));
-       
+
         verify(purchaseService, times(1)).createPurchase(any(PurchaseRequestDto.class));
     }
 
     @Test
     @WithMockUser
     void createPurchase_Should_Return400_WhenPurchaseRequestIsInvalid() throws Exception {
-        
         PurchaseRequestDto invalidRequestDto = new PurchaseRequestDto("", -5, null, null);
 
         mockMvc.perform(post("/api/purchases").contentType(MediaType.APPLICATION_JSON)
@@ -113,5 +120,110 @@ public class PurchaseControllerTest {
                 .andExpect(status().isBadRequest());
 
         verify(purchaseService, never()).createPurchase(any());
+    }
+
+    @Test
+    @WithMockUser
+    void getPurchaseById_Should_Return200AndPurchaseResponseDto_WhenPurchaseExists() throws Exception {
+        Long purchaseId = 1L;
+        LocalDate today = LocalDate.now();
+        PurchaseRequestDto requestDto = new PurchaseRequestDto("Taça", 5, MaterialType.GLASS, today);
+        PurchaseResponseDto responseDto = new PurchaseResponseDto(1L, "Taça", 5, MaterialType.GLASS, today);
+
+        when(purchaseService.getPurchaseById(purchaseId)).thenReturn(responseDto);
+
+        mockMvc.perform(get("/api/purchases/{purchaseId}", purchaseId))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType((MediaType.APPLICATION_JSON_VALUE)))
+                .andExpect(jsonPath("$.purchaseId").value(responseDto.purchaseId()))
+                .andExpect(jsonPath("$.purchaseProduct").value(responseDto.purchaseProduct()))
+                .andExpect(jsonPath("$.quantity").value(responseDto.quantity()))
+                .andExpect(jsonPath("$.materialType").value(responseDto.materialType().toString()));
+    }
+
+    @Test
+    @WithMockUser
+    void getPurchaseById_Should_Return404_WhenPurchaseDoesNotExist() throws Exception {
+        Long purchaseId = 999L;
+
+        when(purchaseService.getPurchaseById(purchaseId))
+                .thenThrow(new EntityNotFoundException("Compra não encontrada com o id: " + purchaseId));
+
+        mockMvc.perform(get("/api/purchases/{purchaseId}", purchaseId))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Compra não encontrada com o id: " + purchaseId));
+
+        verify(purchaseService, times(1)).getPurchaseById(purchaseId);
+    }
+
+    @Test
+    @WithMockUser
+    void updatePurchase_Should_Return200AndUpdatedPurchase_WhenPurchaseExists() throws Exception {
+        Long purchaseId = 1L;
+        LocalDate today = LocalDate.now();
+        PurchaseUpdateDto updateDto = new PurchaseUpdateDto("Xícara", 5, MaterialType.GLASS, today.minusDays(5));
+        PurchaseResponseDto responseDto = new PurchaseResponseDto(purchaseId, "Xícara", 5, MaterialType.GLASS, today);
+
+        when(purchaseService.updatePurchase(eq(purchaseId), any(PurchaseUpdateDto.class))).thenReturn(responseDto);
+
+        mockMvc.perform(patch("/api/purchases/{purchaseId}", purchaseId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateDto)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType((MediaType.APPLICATION_JSON_VALUE)))
+                .andExpect(jsonPath("$.purchaseId").value(responseDto.purchaseId()))
+                .andExpect(jsonPath("$.purchaseProduct").value(responseDto.purchaseProduct()))
+                .andExpect(jsonPath("$.quantity").value(responseDto.quantity()))
+                .andExpect(jsonPath("$.materialType").value(responseDto.materialType().toString()))
+                .andExpect(jsonPath("$.purchaseDate").value(responseDto.purchaseDate().toString()));
+
+        verify(purchaseService, times(1)).updatePurchase(eq(purchaseId), any(PurchaseUpdateDto.class));
+    }
+
+    @Test
+    @WithMockUser
+    void updatePurchase_Should_Return404_WhenPurchaseDoesNotExist() throws Exception {
+        Long purchaseId = 999L;
+        LocalDate today = LocalDate.now();
+        PurchaseUpdateDto updateDto = new PurchaseUpdateDto("Xícara", 5, MaterialType.GLASS, today.minusDays(5));
+
+        when(purchaseService.updatePurchase(eq(purchaseId), any(PurchaseUpdateDto.class)))
+                .thenThrow(new EntityNotFoundException("Compra não encontrada com o id: " + purchaseId));
+
+        mockMvc.perform(patch("/api/purchases/{purchaseId}", purchaseId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateDto)))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Compra não encontrada com o id: " + purchaseId));
+
+        verify(purchaseService, times(1)).updatePurchase(eq(purchaseId), any(PurchaseUpdateDto.class));
+    }
+
+    @Test
+    @WithMockUser
+    void deletePurchase_Should_Return204_WhenPurchaseIsDeleted() throws Exception{
+        Long purchaseId= 1L;
+
+        doNothing().when(purchaseService).deletePurchase(eq(purchaseId));
+
+        mockMvc.perform(delete("/api/purchases/{purchaseId}", purchaseId))
+        .andExpect(status().isNoContent())
+        .andExpect(content().string(""));
+
+        verify(purchaseService, times(1)).deletePurchase(eq(purchaseId));
+    }
+
+    @Test
+    @WithMockUser
+    void deletePurchase_ShouldReturn404_WhenPurchaseDoesNotExists() throws Exception{
+        Long purchaseId = 999L;
+
+        doThrow(new EntityNotFoundException("Compra não encontrada com o id: " + purchaseId)).when(purchaseService).deletePurchase(eq(purchaseId));
+
+        mockMvc.perform(delete("/api/purchases/{purchaseId}", purchaseId))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Compra não encontrada com o id: " + purchaseId));
+
+        verify(purchaseService, times(1)).deletePurchase(eq(purchaseId));
     }
 }

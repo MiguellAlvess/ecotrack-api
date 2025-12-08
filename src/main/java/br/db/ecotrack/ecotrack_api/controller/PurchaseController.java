@@ -80,13 +80,13 @@ public class PurchaseController {
   }
 
   @PatchMapping("/{purchaseId}")
-  public ResponseEntity<PurchaseResponseDto> updatePurchase(@PathVariable Long purchaseId,
+  public ResponseEntity<?> updatePurchase(@PathVariable Long purchaseId,
       @RequestBody PurchaseUpdateDto purchaseUpdateDto) {
     try {
       PurchaseResponseDto updatePurchaseDto = purchaseService.updatePurchase(purchaseId, purchaseUpdateDto);
       return ResponseEntity.ok(updatePurchaseDto);
     } catch (EntityNotFoundException e) {
-      return ResponseEntity.notFound().build();
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
   }
 
