@@ -10,7 +10,7 @@ import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalMostF
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalRecyclingPercentage;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.TotalDisposalQuantityDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalDestinationAmountSummaryDto;
-import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalMaterialAmountSummaryDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalMostDiscardedMaterialDto;
 import br.db.ecotrack.ecotrack_api.service.DisposalService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -72,10 +72,10 @@ public class DisposalController {
     }
   }
 
-  @GetMapping("/disposals-material-summary-30-days")
-  public ResponseEntity<?> getDisposalsMaterialSummary() {
+  @GetMapping("/disposals-most-discarded-material")
+  public ResponseEntity<?> getMostDiscardedMaterial() {
     try {
-      DisposalMaterialAmountSummaryDto disposalMetricsDto = disposalService.aggregateDisposalByMaterial();
+      DisposalMostDiscardedMaterialDto disposalMetricsDto = disposalService.getMostDiscardedMaterial();
       return ResponseEntity.ok(disposalMetricsDto);
     } catch (Exception e) {
       return ResponseEntity.badRequest().body("Erro ao processar a requisição: " + e.getMessage());

@@ -6,7 +6,7 @@ import br.db.ecotrack.ecotrack_api.controller.dto.disposal.DisposalRequestDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.DisposalResponseDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.DisposalUpdateDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalDestinationAmountSummaryDto;
-import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalMaterialAmountSummaryDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalMostDiscardedMaterialDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalMostFrequentDestinationDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalRecyclingPercentage;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.TotalDisposalQuantityDto;
@@ -157,13 +157,18 @@ public class DisposalService {
     return totalQuantity;
   }
 
-  public DisposalMaterialAmountSummaryDto aggregateDisposalByMaterial() {
+  public DisposalMostDiscardedMaterialDto getMostDiscardedMaterial() {
     List<Disposal> lastMonthDisposals = getDisposalsByDateRange();
 
     Map<String, Integer> materialQuantity = lastMonthDisposals.stream()
         .collect(groupingBy(d -> d.getMaterialType().getTypeName(), summingInt(Disposal::getQuantity)));
 
-    return new DisposalMaterialAmountSummaryDto(materialQuantity);
+    String mostDiscardedMaterialDto = materialQuantity.entrySet().stream()
+        .max(Map.Entry.comparingByValue())
+        .map(entry-> entry.getKey())
+        .orElse("Sem registros");
+
+    return new DisposalMostDiscardedMaterialDto(mostDiscardedMaterialDto);
   }
 
   public Map<String, Integer> aggregateDisposalByDestination() {
