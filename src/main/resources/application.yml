@@ -1,0 +1,41 @@
+server:
+  port: 8080
+  error:
+    include-message: always
+
+jwt:
+  public:
+    key: classpath:public.pem
+  private:
+    key: classpath:private.pem
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/recycle-metrics
+    username: postgres
+    password: postgres
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show_sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      chat:
+        options:
+          model: gpt-4o-mini
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    url: /v3/api-docs.yaml
+    config-url: /v3/api-docs/swagger-config
+  writer-with-default-pretty-printer: true

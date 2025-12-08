@@ -4,7 +4,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
-import br.db.ecotrack.ecotrack_api.controller.response.UserResponseDto;
+
+import br.db.ecotrack.ecotrack_api.controller.dto.user.UserResponseDto;
 import br.db.ecotrack.ecotrack_api.domain.entity.User;
 import br.db.ecotrack.ecotrack_api.repository.UserRepository;
 

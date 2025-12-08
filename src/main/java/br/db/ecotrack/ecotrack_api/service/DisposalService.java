@@ -1,10 +1,15 @@
 package br.db.ecotrack.ecotrack_api.service;
 
 import org.springframework.stereotype.Service;
-import br.db.ecotrack.ecotrack_api.controller.request.DisposalRequestDto;
-import br.db.ecotrack.ecotrack_api.controller.response.DisposalResponseDestinationMetricsDto;
-import br.db.ecotrack.ecotrack_api.controller.response.DisposalResponseDto;
-import br.db.ecotrack.ecotrack_api.controller.response.DisposalResponseMetricsDto;
+
+import br.db.ecotrack.ecotrack_api.controller.dto.disposal.DisposalRequestDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.disposal.DisposalResponseDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.disposal.DisposalUpdateDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalDestinationAmountSummaryDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalMaterialAmountSummaryDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalMostFrequentDestinationDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalRecyclingPercentage;
+import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.TotalDisposalQuantityDto;
 import br.db.ecotrack.ecotrack_api.domain.entity.Disposal;
 import br.db.ecotrack.ecotrack_api.domain.entity.User;
 import br.db.ecotrack.ecotrack_api.mapper.DisposalMapper;
@@ -61,23 +66,65 @@ public class DisposalService {
   }
 
   @Transactional
+  public DisposalResponseDto updateDisposal(Long id, DisposalUpdateDto disposalUpdateDto) {
+    Disposal disposal = findDisposalByIdAndCurrentUser(id);
+
+    if (disposalUpdateDto.disposalProduct() != null)
+      disposal.setDisposalProduct(disposalUpdateDto.disposalProduct());
+    if (disposalUpdateDto.quantity() != null)
+      disposal.setQuantity(disposalUpdateDto.quantity());
+    if (disposalUpdateDto.materialType() != null)
+      disposal.setMaterialType(disposalUpdateDto.materialType());
+    if (disposalUpdateDto.destination() != null)
+      disposal.setDestination(disposalUpdateDto.destination());
+    if (disposalUpdateDto.disposalDate() != null)
+      disposal.setDisposalDate(disposalUpdateDto.disposalDate());
+
+    return disposalMapper.toDto(disposalRepository.save(disposal));
+  }
+
+  @Transactional
   public void deleteDisposalById(Long id) {
     Disposal disposal = findDisposalByIdAndCurrentUser(id);
     disposalRepository.delete(disposal);
   }
 
   @Transactional(readOnly = true)
-  public DisposalResponseMetricsDto getTotalItensDisposal() {
+  public TotalDisposalQuantityDto getTotalItensDisposal() {
     int totalQuantityCurrentMonth = getTotalQuantityDisposals();
-    Map<String, Integer> materialAmountSummary = aggregateDisposalByMaterial();
-    return new DisposalResponseMetricsDto(totalQuantityCurrentMonth, materialAmountSummary);
+    return new TotalDisposalQuantityDto(totalQuantityCurrentMonth);
   }
 
   @Transactional(readOnly = true)
-  public DisposalResponseDestinationMetricsDto getMostUsedDestinationDisposal() {
+  public DisposalMostFrequentDestinationDto getMostUsedDestinationDisposal() {
     return getMostUsedDestination()
-        .map(entry -> new DisposalResponseDestinationMetricsDto(entry.getKey(), entry.getValue()))
-        .orElse(new DisposalResponseDestinationMetricsDto("Nenhum destino encontrado", 0));
+        .map(entry -> new DisposalMostFrequentDestinationDto(entry.getKey(), entry.getValue()))
+        .orElse(new DisposalMostFrequentDestinationDto("Nenhum destino encontrado", 0));
+  }
+
+  @Transactional(readOnly = true)
+  public DisposalDestinationAmountSummaryDto getDestinationAmountSummary() {
+    Map<String, Integer> destinationAmountSummary = aggregateDisposalByDestination();
+
+    return new DisposalDestinationAmountSummaryDto(destinationAmountSummary);
+  }
+
+  public DisposalRecyclingPercentage getRecyclingPercentage() {
+    Map<String, Integer> summary = aggregateDisposalByDestination();
+
+    int total = getTotalQuantityDisposals();
+
+    if (total == 0)
+      return new DisposalRecyclingPercentage(0.0);
+
+    int recyclable = summary.entrySet().stream()
+        .filter(e -> !e.getKey().equalsIgnoreCase("Rejeito"))
+        .mapToInt(Map.Entry::getValue)
+        .sum();
+
+    double percentage = Math.round(((recyclable * 100.0) / total) * 100.0) / 100.0;
+
+    return new DisposalRecyclingPercentage(percentage);
   }
 
   private Disposal findDisposalByIdAndCurrentUser(Long id) {
@@ -110,13 +157,13 @@ public class DisposalService {
     return totalQuantity;
   }
 
-  public Map<String, Integer> aggregateDisposalByMaterial() {
+  public DisposalMaterialAmountSummaryDto aggregateDisposalByMaterial() {
     List<Disposal> lastMonthDisposals = getDisposalsByDateRange();
 
     Map<String, Integer> materialQuantity = lastMonthDisposals.stream()
         .collect(groupingBy(d -> d.getMaterialType().getTypeName(), summingInt(Disposal::getQuantity)));
 
-    return materialQuantity;
+    return new DisposalMaterialAmountSummaryDto(materialQuantity);
   }
 
   public Map<String, Integer> aggregateDisposalByDestination() {
