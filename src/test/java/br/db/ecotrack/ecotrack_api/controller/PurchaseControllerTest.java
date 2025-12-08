@@ -11,16 +11,15 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -31,7 +30,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import br.db.ecotrack.ecotrack_api.controller.dto.purchase.PurchaseRequestDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.purchase.PurchaseResponseDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.purchase.PurchaseUpdateDto;
-import br.db.ecotrack.ecotrack_api.domain.entity.Purchase;
+import br.db.ecotrack.ecotrack_api.controller.dto.purchase.metrics.PurchaseMaterialAmountSummaryDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.purchase.metrics.TotalPurchaseQuantityDto;
 import br.db.ecotrack.ecotrack_api.domain.enums.MaterialType;
 import br.db.ecotrack.ecotrack_api.service.PurchaseService;
 import jakarta.persistence.EntityNotFoundException;
@@ -225,5 +225,33 @@ public class PurchaseControllerTest {
                 .andExpect(content().string("Compra não encontrada com o id: " + purchaseId));
 
         verify(purchaseService, times(1)).deletePurchase(eq(purchaseId));
+    }
+
+    @Test
+    @WithMockUser
+    void getTotalItensPurchased_Should_Return200AndTotalQuantity_WhenSucessful() throws Exception{
+        TotalPurchaseQuantityDto totalQuantityDto = new TotalPurchaseQuantityDto(50);
+
+        when(purchaseService.getTotalItensPurchased()).thenReturn(totalQuantityDto);
+
+        mockMvc.perform(get("/api/purchases/total-itens-purchased-30-days"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.totalPurchasesCurrentMonth").value(totalQuantityDto.totalPurchasesCurrentMonth()));
+
+        verify(purchaseService, times(1)).getTotalItensPurchased();
+    }
+
+    @Test
+    @WithMockUser
+    void getPurchasesMaterialSummary_Should_Return200AndPurchasesMaterialSummary_WhenSucessful() throws Exception{
+        PurchaseMaterialAmountSummaryDto materialAmountSummaryDto = new PurchaseMaterialAmountSummaryDto(Map.of("Plástico", 20));
+
+        when(purchaseService.getMaterialAmountSummaryDto()).thenReturn(materialAmountSummaryDto);
+
+        mockMvc.perform(get("/api/purchases/purchases-material-summary-30-days"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.materialAmountSummary.Plástico").value(20));
+
+        verify(purchaseService, times(1)).getMaterialAmountSummaryDto();
     }
 }
