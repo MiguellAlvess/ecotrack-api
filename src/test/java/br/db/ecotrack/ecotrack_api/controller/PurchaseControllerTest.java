@@ -37,7 +37,7 @@ import br.db.ecotrack.ecotrack_api.service.PurchaseService;
 import jakarta.persistence.EntityNotFoundException;
 
 @SpringBootTest
-@AutoConfigureMockMvc(addFilters = false)
+@AutoConfigureMockMvc
 public class PurchaseControllerTest {
 
     @Autowired
@@ -201,24 +201,25 @@ public class PurchaseControllerTest {
 
     @Test
     @WithMockUser
-    void deletePurchase_Should_Return204_WhenPurchaseIsDeleted() throws Exception{
-        Long purchaseId= 1L;
+    void deletePurchase_Should_Return204_WhenPurchaseIsDeleted() throws Exception {
+        Long purchaseId = 1L;
 
         doNothing().when(purchaseService).deletePurchase(eq(purchaseId));
 
         mockMvc.perform(delete("/api/purchases/{purchaseId}", purchaseId))
-        .andExpect(status().isNoContent())
-        .andExpect(content().string(""));
+                .andExpect(status().isNoContent())
+                .andExpect(content().string(""));
 
         verify(purchaseService, times(1)).deletePurchase(eq(purchaseId));
     }
 
     @Test
     @WithMockUser
-    void deletePurchase_ShouldReturn404_WhenPurchaseDoesNotExists() throws Exception{
+    void deletePurchase_ShouldReturn404_WhenPurchaseDoesNotExists() throws Exception {
         Long purchaseId = 999L;
 
-        doThrow(new EntityNotFoundException("Compra não encontrada com o id: " + purchaseId)).when(purchaseService).deletePurchase(eq(purchaseId));
+        doThrow(new EntityNotFoundException("Compra não encontrada com o id: " + purchaseId)).when(purchaseService)
+                .deletePurchase(eq(purchaseId));
 
         mockMvc.perform(delete("/api/purchases/{purchaseId}", purchaseId))
                 .andExpect(status().isNotFound())
@@ -229,28 +230,30 @@ public class PurchaseControllerTest {
 
     @Test
     @WithMockUser
-    void getTotalItensPurchased_Should_Return200AndTotalQuantity_WhenSucessful() throws Exception{
+    void getTotalItensPurchased_Should_Return200AndTotalQuantity_WhenSucessful() throws Exception {
         TotalPurchaseQuantityDto totalQuantityDto = new TotalPurchaseQuantityDto(50);
 
         when(purchaseService.getTotalItensPurchased()).thenReturn(totalQuantityDto);
 
         mockMvc.perform(get("/api/purchases/total-itens-purchased-30-days"))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.totalPurchasesCurrentMonth").value(totalQuantityDto.totalPurchasesCurrentMonth()));
+                .andExpect(status().isOk())
+                .andExpect(
+                        jsonPath("$.totalPurchasesCurrentMonth").value(totalQuantityDto.totalPurchasesCurrentMonth()));
 
         verify(purchaseService, times(1)).getTotalItensPurchased();
     }
 
     @Test
     @WithMockUser
-    void getPurchasesMaterialSummary_Should_Return200AndPurchasesMaterialSummary_WhenSucessful() throws Exception{
-        PurchaseMaterialAmountSummaryDto materialAmountSummaryDto = new PurchaseMaterialAmountSummaryDto(Map.of("Plástico", 20));
+    void getPurchasesMaterialSummary_Should_Return200AndPurchasesMaterialSummary_WhenSucessful() throws Exception {
+        PurchaseMaterialAmountSummaryDto materialAmountSummaryDto = new PurchaseMaterialAmountSummaryDto(
+                Map.of("Plástico", 20));
 
         when(purchaseService.getMaterialAmountSummaryDto()).thenReturn(materialAmountSummaryDto);
 
         mockMvc.perform(get("/api/purchases/purchases-material-summary-30-days"))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.materialAmountSummary.Plástico").value(20));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.materialAmountSummary.Plástico").value(20));
 
         verify(purchaseService, times(1)).getMaterialAmountSummaryDto();
     }
