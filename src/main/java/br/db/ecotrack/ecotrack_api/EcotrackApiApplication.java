@@ -7,7 +7,6 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.Resource;
 
@@ -19,7 +18,6 @@ public class EcotrackApiApplication {
   }
 
   @Bean
-  @ConditionalOnBean(ChatClient.Builder.class) 
   public ChatClient chatClient(
       ChatClient.Builder chatClientBuilder,
       @Value("classpath:system-prompt.txt") Resource resource) throws IOException {

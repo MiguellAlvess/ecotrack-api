@@ -4,6 +4,7 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,7 @@ import br.db.ecotrack.ecotrack_api.controller.dto.openai.VirtualAssistantRespons
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
+@ConditionalOnBean(ChatClient.class)
 @RestController
 @RequestMapping("/api/virtual-assistant")
 @RequiredArgsConstructor
