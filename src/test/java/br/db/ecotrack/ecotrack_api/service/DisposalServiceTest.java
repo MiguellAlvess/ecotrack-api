@@ -24,7 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.DisposalRequestDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.DisposalResponseDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalDestinationAmountSummaryDto;
-import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalMaterialAmountSummaryDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalMostDiscardedMaterialDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalMostFrequentDestinationDto;
 import br.db.ecotrack.ecotrack_api.domain.entity.Disposal;
 import br.db.ecotrack.ecotrack_api.domain.entity.User;
@@ -57,7 +57,7 @@ public class DisposalServiceTest {
   @SuppressWarnings("unused")
   private DisposalDestinationAmountSummaryDto destinationAmountSummaryDto;
   @SuppressWarnings("unused")
-  private DisposalMaterialAmountSummaryDto disposalMaterialAmountSummaryDto;
+  private DisposalMostDiscardedMaterialDto disposalMostDiscardedMaterialDto;
   @SuppressWarnings("unused")
   private DisposalMostFrequentDestinationDto disposalMostFrequentDestinationDto;
 
@@ -96,7 +96,7 @@ public class DisposalServiceTest {
 
     destinationAmountSummaryDto = new DisposalDestinationAmountSummaryDto(Map.of("Reciclagem", 10));
 
-    disposalMaterialAmountSummaryDto = new DisposalMaterialAmountSummaryDto(Map.of("Plástico", 12));
+    disposalMostDiscardedMaterialDto = new DisposalMostDiscardedMaterialDto("Plástico");
 
     disposalMostFrequentDestinationDto = new DisposalMostFrequentDestinationDto("Reciclagem", 8);
   }
@@ -272,20 +272,20 @@ public class DisposalServiceTest {
   }
 
   @Test
-  void aggregateDisposalByMaterial_shouldReturnCorrectMap() {
+  void getMostDiscardedMaterial_shouldReturnCorrectMaterial() {
     Disposal d1 = new Disposal(1L, "Papel", 3, MaterialType.PAPER, DisposalDestination.RECYCLING, LocalDate.now(),
         user);
-    Disposal d2 = new Disposal(2L, "Papel", 7, MaterialType.PAPER, DisposalDestination.RECYCLING, LocalDate.now(),
+    Disposal d2 = new Disposal(2L, "Copo", 7, MaterialType.GLASS, DisposalDestination.DONATION, LocalDate.now(),
         user);
 
     when(currentUserService.getCurrentUserEntity()).thenReturn(user);
     when(disposalRepository.findByUserAndDisposalDateBetween(eq(user), any(), any()))
         .thenReturn(List.of(d1, d2));
 
-    DisposalMaterialAmountSummaryDto result = disposalService.aggregateDisposalByMaterial();
+    DisposalMostDiscardedMaterialDto result = disposalService.getMostDiscardedMaterial();
 
     assertNotNull(result);
-    assertEquals(10, result.materialAmountSummary().get("Papel"));
+    assertEquals("Vidro", result.mostDiscardedMaterial());
 
     verify(currentUserService).getCurrentUserEntity();
   }
@@ -376,5 +376,4 @@ public class DisposalServiceTest {
 
     verify(currentUserService, times(2)).getCurrentUserEntity();
   }
-
 }

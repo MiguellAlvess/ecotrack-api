@@ -27,7 +27,7 @@ import br.db.ecotrack.ecotrack_api.controller.dto.disposal.DisposalRequestDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.DisposalResponseDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.DisposalUpdateDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalDestinationAmountSummaryDto;
-import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalMaterialAmountSummaryDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalMostDiscardedMaterialDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalMostFrequentDestinationDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalRecyclingPercentage;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.TotalDisposalQuantityDto;
@@ -245,17 +245,16 @@ public class DisposalControllerTest {
 
   @Test
   @WithMockUser
-  void getMaterialSummary_Should_Return200_WhenSuccessful() throws Exception {
-    DisposalMaterialAmountSummaryDto dto = new DisposalMaterialAmountSummaryDto(
-        Map.of("Plástico", 20));
+  void getMostDiscardedMaterial_Should_Return200_WhenSuccessful() throws Exception {
+    DisposalMostDiscardedMaterialDto dto = new DisposalMostDiscardedMaterialDto("Plástico");
 
-    when(disposalService.aggregateDisposalByMaterial()).thenReturn(dto);
+    when(disposalService.getMostDiscardedMaterial()).thenReturn(dto);
 
-    mockMvc.perform(get("/api/disposals/disposals-material-summary-30-days"))
+    mockMvc.perform(get("/api/disposals/disposals-most-discarded-material"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.materialAmountSummary.Plástico").value(20));
+        .andExpect(jsonPath("$.mostDiscardedMaterial").value("Plástico"));
 
-    verify(disposalService, times(1)).aggregateDisposalByMaterial();
+    verify(disposalService, times(1)).getMostDiscardedMaterial();
   }
 
   @Test
