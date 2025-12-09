@@ -113,13 +113,13 @@ public class DisposalController {
   }
 
   @PatchMapping("/{disposalId}")
-  public ResponseEntity<DisposalResponseDto> updateDisposal(@PathVariable Long disposalId,
+  public ResponseEntity<?> updateDisposal(@PathVariable Long disposalId,
       @RequestBody DisposalUpdateDto disposalUpdateDto) {
     try {
       DisposalResponseDto updateDiposalDto = disposalService.updateDisposal(disposalId, disposalUpdateDto);
       return ResponseEntity.ok(updateDiposalDto);
     } catch (EntityNotFoundException e) {
-      return ResponseEntity.notFound().build();
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
   }
 
