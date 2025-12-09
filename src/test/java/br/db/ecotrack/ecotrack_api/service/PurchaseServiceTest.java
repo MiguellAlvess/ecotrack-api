@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -22,6 +24,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import br.db.ecotrack.ecotrack_api.controller.dto.purchase.PurchaseRequestDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.purchase.PurchaseResponseDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.purchase.metrics.PurchaseMaterialAmountSummaryDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.purchase.metrics.TotalPurchaseQuantityDto;
 import br.db.ecotrack.ecotrack_api.domain.entity.Purchase;
 import br.db.ecotrack.ecotrack_api.domain.entity.User;
 import br.db.ecotrack.ecotrack_api.domain.enums.MaterialType;
@@ -239,5 +243,34 @@ public class PurchaseServiceTest {
     verify(currentUserService).getCurrentUserEntity();
     verify(purchaseRepository).findById(3L);
     verifyNoMoreInteractions(purchaseRepository);
+  }
+
+  @Test
+  void getTotalItensPurchased_shouldReturnCOrrectQuantity() {
+    when(currentUserService.getCurrentUserEntity()).thenReturn(user);
+    when(purchaseRepository.findByUserAndPurchaseDateBetween(eq(user), any(), any()))
+        .thenReturn(List.of(purchaseSaved));
+
+    TotalPurchaseQuantityDto result = purchaseService.getTotalItensPurchased();
+
+    assertNotNull(result);
+    assertEquals(5, result.totalPurchasesCurrentMonth());
+  }
+
+  @Test
+  void getMaterialAmountSummaryDto_shouldReturnCorrectSummary() {
+    Purchase p1 = new Purchase(1L, "Copo", 3, MaterialType.GLASS, LocalDate.now(), user);
+    Purchase p2 = new Purchase(2L, "Garrafa", 7, MaterialType.GLASS, LocalDate.now(), user);
+
+    when(currentUserService.getCurrentUserEntity()).thenReturn(user);
+    when(purchaseRepository.findByUserAndPurchaseDateBetween(eq(user), any(), any()))
+        .thenReturn(List.of(p1, p2));
+
+    PurchaseMaterialAmountSummaryDto result = purchaseService.getMaterialAmountSummaryDto();
+
+    assertNotNull(result);
+    assertEquals(10, result.materialAmountSummary().get("Vidro"));
+
+    verify(currentUserService).getCurrentUserEntity();
   }
 }
