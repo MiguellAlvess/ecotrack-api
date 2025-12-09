@@ -2,12 +2,14 @@ package br.db.ecotrack.ecotrack_api.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.dao.DataIntegrityViolationException;
 
+import br.db.ecotrack.ecotrack_api.common.UserConstants;
 import static br.db.ecotrack.ecotrack_api.common.UserConstants.invalidUser;
 import static br.db.ecotrack.ecotrack_api.common.UserConstants.validUser;
 import br.db.ecotrack.ecotrack_api.domain.entity.User;
@@ -21,6 +23,12 @@ public class UserRepositoryTest {
 
   @Autowired
   private TestEntityManager testEntityManager;
+
+  @AfterEach
+  public void afterEach() {
+    User user = UserConstants.validUser();
+    user.setUserId(null);
+  }
 
   @Test
   public void createUser_WithValidData_ReturnsUser() {
@@ -46,21 +54,33 @@ public class UserRepositoryTest {
 
   @Test
   public void createUser_WithExistingEmail_ThrowsException() {
-    User firstUser = new User();
-    firstUser.setName("First User");
+    User firstUser = UserConstants.validUser();
     firstUser.setEmail("duplicated@email.com");
-    firstUser.setPassword("password123");
-
-    userRepository.saveAndFlush(firstUser);
-
-    User secondUser = new User();
-    secondUser.setName("Second User");
+    testEntityManager.persistFlushFind(firstUser);
+    User secondUser = UserConstants.validUser();
     secondUser.setEmail("duplicated@email.com");
-    secondUser.setPassword("otherPass123");
 
     assertThatThrownBy(() -> {
-      userRepository.save(secondUser);
-      userRepository.flush();
+      userRepository.saveAndFlush(secondUser);
     }).isInstanceOf(DataIntegrityViolationException.class);
+  }
+
+  @Test
+  public void getUser_ByExistingId_ReturnsUser() {
+    User user = UserConstants.validUser();
+    testEntityManager.persistFlushFind(user);
+
+    User sut = userRepository.findById(user.getUserId()).get();
+
+    assertThat(sut).isNotNull();
+    assertThat(sut.getName()).isEqualTo(user.getName());
+    assertThat(sut.getEmail()).isEqualTo(user.getEmail());
+  }
+
+  @Test
+  public void getUser_ByNonExistingId_ReturnsNull() {
+    User sut = userRepository.findById(1L).orElse(null);
+
+    assertThat(sut).isNull();
   }
 }
