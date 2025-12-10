@@ -1,28 +1,29 @@
 package br.db.ecotrack.ecotrack_api.controller;
 
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.DisposalRequestDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.DisposalResponseDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.DisposalUpdateDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalDestinationAmountSummaryDto;
+import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalMostDiscardedMaterialDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalMostFrequentDestinationDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalRecyclingPercentage;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.TotalDisposalQuantityDto;
-import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalDestinationAmountSummaryDto;
-import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalMostDiscardedMaterialDto;
 import br.db.ecotrack.ecotrack_api.service.DisposalService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/disposals")
@@ -62,7 +63,7 @@ public class DisposalController {
     return ResponseEntity.ok(userDisposals);
   }
 
-  @GetMapping("/total-itens-disposed-30-days")
+  @GetMapping("/dashboard/total-itens-disposed-30-days")
   public ResponseEntity<?> getTotalItensDisposal() {
     try {
       TotalDisposalQuantityDto disposalMetricsDto = disposalService.getTotalItensDisposal();
@@ -72,7 +73,7 @@ public class DisposalController {
     }
   }
 
-  @GetMapping("/disposals-most-discarded-material")
+  @GetMapping("/dashboard/disposals-most-discarded-material")
   public ResponseEntity<?> getMostDiscardedMaterial() {
     try {
       DisposalMostDiscardedMaterialDto disposalMetricsDto = disposalService.getMostDiscardedMaterial();
@@ -82,7 +83,7 @@ public class DisposalController {
     }
   }
 
-  @GetMapping("/disposal-most-frequent-destination")
+  @GetMapping("/dashboard/disposal-most-frequent-destination")
   public ResponseEntity<?> getMostUsedDestination() {
     try {
       DisposalMostFrequentDestinationDto dto = disposalService.getMostUsedDestinationDisposal();
@@ -92,7 +93,7 @@ public class DisposalController {
     }
   }
 
-  @GetMapping("disposals-destination-summary-30-days")
+  @GetMapping("/dashboard/disposals-destination-summary-30-days")
   public ResponseEntity<?> getDestinationAmountSummary() {
     try {
       DisposalDestinationAmountSummaryDto dto = disposalService.getDestinationAmountSummary();
@@ -102,7 +103,7 @@ public class DisposalController {
     }
   }
 
-  @GetMapping("/percentage-disposals-items-30-days")
+  @GetMapping("/dashboard/percentage-disposals-items-30-days")
   public ResponseEntity<?> getPercentageRecycledItemsDisposal() {
     try {
       DisposalRecyclingPercentage metric = disposalService.getRecyclingPercentage();

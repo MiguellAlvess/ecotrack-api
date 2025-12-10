@@ -22,7 +22,7 @@ public class VirtualAssistantController {
   private final ChatClient chatClient;
   private static final String CHAT_MEMORY_SESSION_KEY = "chatMemory";
 
-  @PostMapping("/prompt")
+  @PostMapping
   public VirtualAssistantResponse handleChatPrompt(
       @RequestBody VirtualAssistantRequest request,
       HttpSession session) {
