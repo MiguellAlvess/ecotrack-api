@@ -1,9 +1,15 @@
+![Java](https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-6DB33F?logo=springboot&logoColor=white)
+![Spring Security](https://img.shields.io/badge/Spring%20Security-JWT-6DB33F?logo=springsecurity&logoColor=white)
+![Spring AI](https://img.shields.io/badge/Spring%20AI-OpenAI-000000?logo=openai&logoColor=white)
+![Maven](https://img.shields.io/badge/Maven-Build-C71A36?logo=apachemaven&logoColor=white)
+
 # RecycleMetrics API
 
 RecycleMetrics API é o backend do projeto RecycleMetrics, uma aplicação voltada para o acompanhamento de compras, descartes de resíduos e apoio à mudança de hábitos sustentáveis.
 
 Este repositório contém apenas a API REST desenvolvida em Java com Spring Boot.
-O frontend (React + TypeScript) consome estes endpoints e é mantido em um repositório separado.
+O frontend (React + TypeScript) consome estes endpoints e é mantido em um [repositório separado](https://github.com/MiguellAlvess/recyclemetrics-frontend).
 
 ## Visão geral
 
@@ -133,8 +139,7 @@ A documentação interativa gerada pelo Springdoc OpenAPI pode ser acessada em:
 
 ## Diagrama de entidades
 
-![Diagrama de Entidades](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/MiguellAlvess/ecotrack-api/refs/heads/main/docs/diagram.puml&v=1
-)
+![Diagrama de Entidades](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/MiguellAlvess/ecotrack-api/refs/heads/main/docs/diagram.puml&v=1)
 
 ## Arquitetura geral
 
@@ -168,21 +173,35 @@ Tanto no login quanto na criação de conta, o usuário já é automaticamente a
 
 ## Visão geral dos endpoints
 
-| Método                  | Endpoint            | Descrição                                         |
-| :---------------------- | :------------------ | :------------------------------------------------ |
-| _Autenticação_          |                     |                                                   |
-| POST                    | /auth/login         | Autentica um usuário e retorna um token JWT.      |
-| POST                    | /auth/register      | Registra um novo usuário.                         |
-| _Descartes (Disposals)_ |                     |                                                   |
-| POST                    | /api/disposals      | Registra um novo descarte para o usuário logado.  |
-| GET                     | /api/disposals      | Retorna todos os descartes do usuário logado.     |
-| GET                     | /api/disposals/{id} | Retorna um descarte específico do usuário logado. |
-| DELETE                  | /api/disposals/{id} | Deleta um descarte do usuário logado.             |
-| _Compras (Purchases)_   |                     |                                                   |
-| POST                    | /api/purchases      | Registra uma nova compra para o usuário logado.   |
-| GET                     | /api/purchases      | Retorna todas as compras do usuário logado.       |
-| GET                     | /api/purchases/{id} | Retorna uma compra específica do usuário logado.  |
-| DELETE                  | /api/purchases/{id} | Deleta uma compra do usuário logado.              |
+| Método                  | Endpoint                                                       | Descrição                                         |
+| :---------------------- | :------------------------------------------------------------- | :------------------------------------------------ |
+| _Autenticação_          |                                                                |                                                   |
+| POST                    | /auth/login                                                    | Autentica um usuário e retorna um token JWT.      |
+| POST                    | /auth/register                                                 | Registra um novo usuário.                         |
+| _Compras (Purchases)_   |                                                                |                                                   |
+| POST                    | /api/purchases                                                 | Registra uma nova compra para o usuário logado.   |
+| GET                     | /api/purchases                                                 | Retorna todas as compras do usuário logado.       |
+| GET                     | /api/purchases/{id}                                            | Retorna uma compra específica do usuário logado.  |
+| PATCH                   | /api/purchases/{purchaseId}                                    | Atualizar compra                                  |
+| DELETE                  | /api/purchases/{id}                                            | Deleta uma compra do usuário logado.              |
+| GET                     | /api/purchases/dashboard/total-itens-purchased-30-days         | Total de itens comprados nos últimos 30 dias.     |
+| GET                     | /api/purchases/dashboard/purchases-material-summary-30-days    | Resumo de materiais comprados (30 dias)           |
+| _Descartes (Disposals)_ |                                                                |                                                   |
+| POST                    | /api/disposals                                                 | Registra um novo descarte para o usuário logado.  |
+| GET                     | /api/disposals                                                 | Retorna todos os descartes do usuário logado.     |
+| GET                     | /api/disposals/{id}                                            | Retorna um descarte específico do usuário logado. |
+| PATCH                   | /api/disposals/{disposalId}                                    | Atualizar descarte                                |
+| DELETE                  | /api/disposals/{id}                                            | Deleta um descarte do usuário logado.             |
+| GET                     | /api/disposals/dashboard/total-itens-disposed-30-days          | Total de itens descartados (30 dias)              |
+| GET                     | /api/disposals/dashboard/percentage-disposals-items-30-days    | Percentual de itens descartados (30 dias)         |
+| GET                     | /api/disposals/dashboard/disposals-most-discarded-material     | Material mais descartado                          |
+| GET                     | /api/disposals/dashboard/disposals-destination-summary-30-days | Resumo de destinos de descarte (30 dias)          |
+| GET                     | /api/disposals/dashboard/disposal-most-frequent-destination    | Destino mais frequente de descarte                |
+| _Usuário (Users)_       |                                                                |                                                   |
+| GET                     | /api/users/{id}                                                | Buscar usuário por ID                             |
+| DELETE                  | /api/users/{id}                                                | Remover usuário                                   |
+| PATCH                   | /api/users/{id}                                                | Atualizar usuário                                 |
+| GET                     | /api/users/me                                                  | Buscar dados do usuário autenticado               |
 
 ## Testes
 
