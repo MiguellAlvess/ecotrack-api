@@ -14,7 +14,7 @@ import br.db.ecotrack.ecotrack_api.service.AuthService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/users/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 
   private final AuthService authService;
@@ -29,7 +29,7 @@ public class AuthController {
     return ResponseEntity.ok(authService.login(loginRequestDto));
   }
 
-  @PostMapping("/register")
+  @PostMapping
   public ResponseEntity<LoginResponseDto> register(
       @RequestBody @Valid UserRequestDto userRequestDto) {
     return ResponseEntity
