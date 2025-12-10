@@ -1,92 +1,98 @@
 @startuml
-' Configurações para melhorar a aparência
+' Estética
 skinparam classAttributeIconSize 0
 skinparam linetype ortho
 hide empty members
 
-' Definição das Entidades (Classes)
+' =======================================================
+' ENTIDADES PRINCIPAIS
+' =======================================================
+
 class User {
   + userId: Long <<PK>>
   --
-  + name: String
-  + email: String
-  + password: String
-}
-
-class Material {
-  + materialId: Long <<PK>>
-  --
-  + type: String
-  + description: String
+  + name: String (Varchar 250)
+  + email: String (Varchar 500)
+  + password: String (Varchar 225)
 }
 
 class Purchase {
   + purchaseId: Long <<PK>>
   --
-  + quantity: Double
-  + measurementUnit: MeasurementUnit
+  + purchaseProduct: String (Varchar 50)
+  + quantity: Integer
+  + materialType: MaterialType
   + purchaseDate: LocalDate
   --
   + user_id: Long <<FK>>
-  + material_id: Long <<FK>>
 }
 
 class Disposal {
   + disposalId: Long <<PK>>
   --
-  + quantity: Double
-  + unit: MeasurementUnit
+  + disposalProduct: String (Varchar 50)
+  + quantity: Integer
+  + materialType: MaterialType
   + destination: DisposalDestination
   + disposalDate: LocalDate
   --
   + user_id: Long <<FK>>
-  + material_id: Long <<FK>>
 }
 
-' Definição dos Enums (como classes com estereótipo <<enum>>)
-enum MeasurementUnit {
-  KG
-  G
-  L
-  ML
-  UNIDADE
+' =======================================================
+' ENUMS (valores reais do projeto)
+' =======================================================
+
+enum MaterialType {
+  PLASTIC ("Plástico")
+  GLASS ("Vidro")
+  METAL ("Metal")
+  PAPER ("Papel")
+  ORGANIC ("Orgânico")
+  NOT_RECYCLABLE ("Não Reciclável")
 }
 
 enum DisposalDestination {
-  RECICLAVEL
-  COMPOSTAGEM
-  REJEITO
-  DOACAO
+  RECYCLING ("Reciclagem")
+  COMPOSTING ("Compostagem")
+  WASTE ("Rejeito")
+  DONATION ("Doação")
 }
 
-' Definição das Relações
-' Um User tem muitas Purchases
-' Muitas Purchases são de um Material
-User "1" -- "0..*" Purchase
-Material "1" -- "0..*" Purchase
+' =======================================================
+' RELACIONAMENTOS
+' =======================================================
 
-' Um User tem muitos Disposals
-' Muitos Disposals são de um Material
-User "1" -- "0..*" Disposal
-Material "1" -- "0..*" Disposal
+User "1" -- "0..*" Purchase : has
+User "1" -- "0..*" Disposal : has
 
-' Relações com os Enums
-Purchase ..> MeasurementUnit
-Disposal ..> MeasurementUnit
+Purchase ..> MaterialType
+Disposal ..> MaterialType
 Disposal ..> DisposalDestination
 
-' Adicionando as notas (balões de exemplo)
-note top of Purchase : "Compra"
-note top of Disposal : "Resíduo"
+' =======================================================
+' NOTAS (iguais ao estilo do diagrama enviado)
+' =======================================================
 
-note right of Material
-  (ex: "Plástico", "Vidro")
-  (ex: "Garrafas, pacotes...")
+note top of Purchase
+  "Compra"
 end note
 
-note right of Disposal
-  (ex: reciclável,
-  compostagem, etc)
+note top of Disposal
+  "Descarte"
 end note
 
+note right of MaterialType
+  Tipos de materiais:
+  - Recicláveis (ex.: vidro, metal, papel)
+  - Não recicláveis
+end note
+
+note right of DisposalDestination
+  Destinos:
+  - Reciclagem
+  - Compostagem
+  - Rejeito
+  - Doação
+end note
 @enduml
