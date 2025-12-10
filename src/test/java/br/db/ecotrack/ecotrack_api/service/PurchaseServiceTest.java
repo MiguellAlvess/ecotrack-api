@@ -10,18 +10,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import br.db.ecotrack.ecotrack_api.controller.dto.purchase.PurchaseRequestDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.purchase.PurchaseResponseDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.purchase.metrics.PurchaseMaterialAmountSummaryDto;
@@ -246,7 +243,7 @@ public class PurchaseServiceTest {
   }
 
   @Test
-  void getTotalItensPurchased_shouldReturnCOrrectQuantity() {
+  void getTotalItensPurchased_shouldReturnCorrectQuantity() {
     when(currentUserService.getCurrentUserEntity()).thenReturn(user);
     when(purchaseRepository.findByUserAndPurchaseDateBetween(eq(user), any(), any()))
         .thenReturn(List.of(purchaseSaved));
