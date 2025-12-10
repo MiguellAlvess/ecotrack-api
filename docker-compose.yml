@@ -13,5 +13,18 @@ services:
     volumes:
       - recyclemetrics-data:/var/lib/postgresql/data
 
+  postgres-test:
+    image: postgres:17
+    container_name: recycle-metrics-postgres-test
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: recycle-metrics-test
+    ports:
+      - "5433:5432"
+    volumes:
+      - recyclemetrics-test-data:/var/lib/postgresql/data
+
 volumes:
   recyclemetrics-data:
+  recyclemetrics-test-data:
