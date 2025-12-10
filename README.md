@@ -133,7 +133,8 @@ A documentação interativa gerada pelo Springdoc OpenAPI pode ser acessada em:
 
 ## Diagrama de entidades
 
-![Diagrama de Entidades](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/MiguellAlvess/ecotrack-api/refs/heads/main/docs/diagram.puml)
+![Diagrama de Entidades](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/MiguellAlvess/ecotrack-api/refs/heads/main/docs/diagram.puml&v=1
+)
 
 ## Arquitetura geral
 
