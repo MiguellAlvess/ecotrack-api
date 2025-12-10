@@ -1,8 +1,17 @@
 package br.db.ecotrack.ecotrack_api.controller;
 
 import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import br.db.ecotrack.ecotrack_api.controller.dto.purchase.PurchaseRequestDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.purchase.PurchaseResponseDto;
@@ -12,14 +21,6 @@ import br.db.ecotrack.ecotrack_api.controller.dto.purchase.metrics.TotalPurchase
 import br.db.ecotrack.ecotrack_api.service.PurchaseService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/purchases")
@@ -59,7 +60,7 @@ public class PurchaseController {
     return ResponseEntity.ok(purchases);
   }
 
-  @GetMapping("/total-itens-purchased-30-days")
+  @GetMapping("/dashboard/total-itens-purchased-30-days")
   public ResponseEntity<?> getTotalItensPurchased() {
     try {
       TotalPurchaseQuantityDto totalQuantity = purchaseService.getTotalItensPurchased();
@@ -69,7 +70,7 @@ public class PurchaseController {
     }
   }
 
-  @GetMapping("/purchases-material-summary-30-days")
+  @GetMapping("/dashboard/purchases-material-summary-30-days")
   public ResponseEntity<?> getPurchasesMaterialSummary() {
     try {
       PurchaseMaterialAmountSummaryDto materialSummary = purchaseService.getMaterialAmountSummaryDto();
