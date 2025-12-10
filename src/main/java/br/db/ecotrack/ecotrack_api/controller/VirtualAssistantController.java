@@ -38,6 +38,7 @@ public class VirtualAssistantController {
         .advisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
         .call()
         .content();
+
     return new VirtualAssistantResponse(aiResponse);
   }
 }

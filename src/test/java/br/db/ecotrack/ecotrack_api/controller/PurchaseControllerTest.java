@@ -14,9 +14,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -40,221 +42,224 @@ import jakarta.persistence.EntityNotFoundException;
 @AutoConfigureMockMvc
 public class PurchaseControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+  @Autowired
+  private MockMvc mockMvc;
 
-    @MockitoBean
-    private PurchaseService purchaseService;
+  @MockitoBean
+  private PurchaseService purchaseService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+  @Autowired
+  private ObjectMapper objectMapper;
 
-    @Test
-    @WithMockUser
-    void getAllPurchases_Should_Return200AndListOfPurchases_WhenExists() throws Exception {
-        LocalDate today = LocalDate.now();
+  @MockBean
+  private ChatClient chatClient;
 
-        PurchaseResponseDto dto1 = new PurchaseResponseDto(1L, "Garrafa", 5, MaterialType.ORGANIC, today);
-        PurchaseResponseDto dto2 = new PurchaseResponseDto(1L, "Taça", 5, MaterialType.GLASS, today.minusDays(5));
-        List<PurchaseResponseDto> purchaseList = List.of(dto1, dto2);
-        when(purchaseService.getAllPurchasesForCurrentUser()).thenReturn(purchaseList);
+  @Test
+  @WithMockUser
+  void getAllPurchases_Should_Return200AndListOfPurchases_WhenExists() throws Exception {
+    LocalDate today = LocalDate.now();
 
-        mockMvc.perform(get("/api/purchases"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType((MediaType.APPLICATION_JSON_VALUE)))
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].purchaseProduct").value(dto1.purchaseProduct()))
-                .andExpect(jsonPath("$[0].quantity").value(dto1.quantity()))
-                .andExpect(jsonPath("$[0].materialType").value(dto1.materialType().toString()))
-                .andExpect(jsonPath("$[1].purchaseProduct").value(dto2.purchaseProduct()))
-                .andExpect(jsonPath("$[1].quantity").value(dto2.quantity()))
-                .andExpect(jsonPath("$[1].materialType").value(dto2.materialType().toString()));
+    PurchaseResponseDto dto1 = new PurchaseResponseDto(1L, "Garrafa", 5, MaterialType.ORGANIC, today);
+    PurchaseResponseDto dto2 = new PurchaseResponseDto(1L, "Taça", 5, MaterialType.GLASS, today.minusDays(5));
+    List<PurchaseResponseDto> purchaseList = List.of(dto1, dto2);
+    when(purchaseService.getAllPurchasesForCurrentUser()).thenReturn(purchaseList);
 
-        verify(purchaseService, times(1)).getAllPurchasesForCurrentUser();
-    }
+    mockMvc.perform(get("/api/purchases"))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType((MediaType.APPLICATION_JSON_VALUE)))
+        .andExpect(jsonPath("$").isArray())
+        .andExpect(jsonPath("$", hasSize(2)))
+        .andExpect(jsonPath("$[0].purchaseProduct").value(dto1.purchaseProduct()))
+        .andExpect(jsonPath("$[0].quantity").value(dto1.quantity()))
+        .andExpect(jsonPath("$[0].materialType").value(dto1.materialType().toString()))
+        .andExpect(jsonPath("$[1].purchaseProduct").value(dto2.purchaseProduct()))
+        .andExpect(jsonPath("$[1].quantity").value(dto2.quantity()))
+        .andExpect(jsonPath("$[1].materialType").value(dto2.materialType().toString()));
 
-    @Test
-    @WithMockUser
-    void getAllPurchases_Should_Return200AndEmptyList_WhenUserHasNoPurchases() throws Exception {
-        List<PurchaseResponseDto> purchaseEmptyList = List.of();
-        when(purchaseService.getAllPurchasesForCurrentUser()).thenReturn(purchaseEmptyList);
+    verify(purchaseService, times(1)).getAllPurchasesForCurrentUser();
+  }
 
-        mockMvc.perform(get("/api/purchases"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType((MediaType.APPLICATION_JSON_VALUE)))
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(0)));
+  @Test
+  @WithMockUser
+  void getAllPurchases_Should_Return200AndEmptyList_WhenUserHasNoPurchases() throws Exception {
+    List<PurchaseResponseDto> purchaseEmptyList = List.of();
+    when(purchaseService.getAllPurchasesForCurrentUser()).thenReturn(purchaseEmptyList);
 
-        verify(purchaseService, times(1)).getAllPurchasesForCurrentUser();
-    }
+    mockMvc.perform(get("/api/purchases"))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType((MediaType.APPLICATION_JSON_VALUE)))
+        .andExpect(jsonPath("$").isArray())
+        .andExpect(jsonPath("$", hasSize(0)));
 
-    @Test
-    @WithMockUser
-    void createPurchase_Should_Return201AndPurchaseResponseDto_WhenPurchaseIsCreated() throws Exception {
-        LocalDate today = LocalDate.now();
-        PurchaseRequestDto requestDto = new PurchaseRequestDto("Taça", 5, MaterialType.GLASS, today);
-        PurchaseResponseDto responseDto = new PurchaseResponseDto(1L, "Taça", 5, MaterialType.GLASS, today);
+    verify(purchaseService, times(1)).getAllPurchasesForCurrentUser();
+  }
 
-        when(purchaseService.createPurchase(any(PurchaseRequestDto.class))).thenReturn(responseDto);
+  @Test
+  @WithMockUser
+  void createPurchase_Should_Return201AndPurchaseResponseDto_WhenPurchaseIsCreated() throws Exception {
+    LocalDate today = LocalDate.now();
+    PurchaseRequestDto requestDto = new PurchaseRequestDto("Taça", 5, MaterialType.GLASS, today);
+    PurchaseResponseDto responseDto = new PurchaseResponseDto(1L, "Taça", 5, MaterialType.GLASS, today);
 
-        mockMvc.perform(post("/api/purchases").contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)))
-                .andExpect(status().isCreated())
-                .andExpect(content().contentType((MediaType.APPLICATION_JSON_VALUE)))
-                .andExpect(jsonPath("$.purchaseId").value(responseDto.purchaseId()))
-                .andExpect(jsonPath("$.purchaseProduct").value(responseDto.purchaseProduct()))
-                .andExpect(jsonPath("$.quantity").value(responseDto.quantity()))
-                .andExpect(jsonPath("$.materialType").value(responseDto.materialType().toString()));
+    when(purchaseService.createPurchase(any(PurchaseRequestDto.class))).thenReturn(responseDto);
 
-        verify(purchaseService, times(1)).createPurchase(any(PurchaseRequestDto.class));
-    }
+    mockMvc.perform(post("/api/purchases").contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(requestDto)))
+        .andExpect(status().isCreated())
+        .andExpect(content().contentType((MediaType.APPLICATION_JSON_VALUE)))
+        .andExpect(jsonPath("$.purchaseId").value(responseDto.purchaseId()))
+        .andExpect(jsonPath("$.purchaseProduct").value(responseDto.purchaseProduct()))
+        .andExpect(jsonPath("$.quantity").value(responseDto.quantity()))
+        .andExpect(jsonPath("$.materialType").value(responseDto.materialType().toString()));
 
-    @Test
-    @WithMockUser
-    void createPurchase_Should_Return400_WhenPurchaseRequestIsInvalid() throws Exception {
-        PurchaseRequestDto invalidRequestDto = new PurchaseRequestDto("", -5, null, null);
+    verify(purchaseService, times(1)).createPurchase(any(PurchaseRequestDto.class));
+  }
 
-        mockMvc.perform(post("/api/purchases").contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(invalidRequestDto)))
-                .andExpect(status().isBadRequest());
+  @Test
+  @WithMockUser
+  void createPurchase_Should_Return400_WhenPurchaseRequestIsInvalid() throws Exception {
+    PurchaseRequestDto invalidRequestDto = new PurchaseRequestDto("", -5, null, null);
 
-        verify(purchaseService, never()).createPurchase(any());
-    }
+    mockMvc.perform(post("/api/purchases").contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(invalidRequestDto)))
+        .andExpect(status().isBadRequest());
 
-    @Test
-    @WithMockUser
-    void getPurchaseById_Should_Return200AndPurchaseResponseDto_WhenPurchaseExists() throws Exception {
-        Long purchaseId = 1L;
-        LocalDate today = LocalDate.now();
-        PurchaseRequestDto requestDto = new PurchaseRequestDto("Taça", 5, MaterialType.GLASS, today);
-        PurchaseResponseDto responseDto = new PurchaseResponseDto(1L, "Taça", 5, MaterialType.GLASS, today);
+    verify(purchaseService, never()).createPurchase(any());
+  }
 
-        when(purchaseService.getPurchaseById(purchaseId)).thenReturn(responseDto);
+  @Test
+  @WithMockUser
+  void getPurchaseById_Should_Return200AndPurchaseResponseDto_WhenPurchaseExists() throws Exception {
+    Long purchaseId = 1L;
+    LocalDate today = LocalDate.now();
+    PurchaseRequestDto requestDto = new PurchaseRequestDto("Taça", 5, MaterialType.GLASS, today);
+    PurchaseResponseDto responseDto = new PurchaseResponseDto(1L, "Taça", 5, MaterialType.GLASS, today);
 
-        mockMvc.perform(get("/api/purchases/{purchaseId}", purchaseId))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType((MediaType.APPLICATION_JSON_VALUE)))
-                .andExpect(jsonPath("$.purchaseId").value(responseDto.purchaseId()))
-                .andExpect(jsonPath("$.purchaseProduct").value(responseDto.purchaseProduct()))
-                .andExpect(jsonPath("$.quantity").value(responseDto.quantity()))
-                .andExpect(jsonPath("$.materialType").value(responseDto.materialType().toString()));
-    }
+    when(purchaseService.getPurchaseById(purchaseId)).thenReturn(responseDto);
 
-    @Test
-    @WithMockUser
-    void getPurchaseById_Should_Return404_WhenPurchaseDoesNotExist() throws Exception {
-        Long purchaseId = 999L;
+    mockMvc.perform(get("/api/purchases/{purchaseId}", purchaseId))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType((MediaType.APPLICATION_JSON_VALUE)))
+        .andExpect(jsonPath("$.purchaseId").value(responseDto.purchaseId()))
+        .andExpect(jsonPath("$.purchaseProduct").value(responseDto.purchaseProduct()))
+        .andExpect(jsonPath("$.quantity").value(responseDto.quantity()))
+        .andExpect(jsonPath("$.materialType").value(responseDto.materialType().toString()));
+  }
 
-        when(purchaseService.getPurchaseById(purchaseId))
-                .thenThrow(new EntityNotFoundException("Compra não encontrada com o id: " + purchaseId));
+  @Test
+  @WithMockUser
+  void getPurchaseById_Should_Return404_WhenPurchaseDoesNotExist() throws Exception {
+    Long purchaseId = 999L;
 
-        mockMvc.perform(get("/api/purchases/{purchaseId}", purchaseId))
-                .andExpect(status().isNotFound())
-                .andExpect(content().string("Compra não encontrada com o id: " + purchaseId));
+    when(purchaseService.getPurchaseById(purchaseId))
+        .thenThrow(new EntityNotFoundException("Compra não encontrada com o id: " + purchaseId));
 
-        verify(purchaseService, times(1)).getPurchaseById(purchaseId);
-    }
+    mockMvc.perform(get("/api/purchases/{purchaseId}", purchaseId))
+        .andExpect(status().isNotFound())
+        .andExpect(content().string("Compra não encontrada com o id: " + purchaseId));
 
-    @Test
-    @WithMockUser
-    void updatePurchase_Should_Return200AndUpdatedPurchase_WhenPurchaseExists() throws Exception {
-        Long purchaseId = 1L;
-        LocalDate today = LocalDate.now();
-        PurchaseUpdateDto updateDto = new PurchaseUpdateDto("Xícara", 5, MaterialType.GLASS, today.minusDays(5));
-        PurchaseResponseDto responseDto = new PurchaseResponseDto(purchaseId, "Xícara", 5, MaterialType.GLASS, today);
+    verify(purchaseService, times(1)).getPurchaseById(purchaseId);
+  }
 
-        when(purchaseService.updatePurchase(eq(purchaseId), any(PurchaseUpdateDto.class))).thenReturn(responseDto);
+  @Test
+  @WithMockUser
+  void updatePurchase_Should_Return200AndUpdatedPurchase_WhenPurchaseExists() throws Exception {
+    Long purchaseId = 1L;
+    LocalDate today = LocalDate.now();
+    PurchaseUpdateDto updateDto = new PurchaseUpdateDto("Xícara", 5, MaterialType.GLASS, today.minusDays(5));
+    PurchaseResponseDto responseDto = new PurchaseResponseDto(purchaseId, "Xícara", 5, MaterialType.GLASS, today);
 
-        mockMvc.perform(patch("/api/purchases/{purchaseId}", purchaseId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updateDto)))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType((MediaType.APPLICATION_JSON_VALUE)))
-                .andExpect(jsonPath("$.purchaseId").value(responseDto.purchaseId()))
-                .andExpect(jsonPath("$.purchaseProduct").value(responseDto.purchaseProduct()))
-                .andExpect(jsonPath("$.quantity").value(responseDto.quantity()))
-                .andExpect(jsonPath("$.materialType").value(responseDto.materialType().toString()))
-                .andExpect(jsonPath("$.purchaseDate").value(responseDto.purchaseDate().toString()));
+    when(purchaseService.updatePurchase(eq(purchaseId), any(PurchaseUpdateDto.class))).thenReturn(responseDto);
 
-        verify(purchaseService, times(1)).updatePurchase(eq(purchaseId), any(PurchaseUpdateDto.class));
-    }
+    mockMvc.perform(patch("/api/purchases/{purchaseId}", purchaseId)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(updateDto)))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType((MediaType.APPLICATION_JSON_VALUE)))
+        .andExpect(jsonPath("$.purchaseId").value(responseDto.purchaseId()))
+        .andExpect(jsonPath("$.purchaseProduct").value(responseDto.purchaseProduct()))
+        .andExpect(jsonPath("$.quantity").value(responseDto.quantity()))
+        .andExpect(jsonPath("$.materialType").value(responseDto.materialType().toString()))
+        .andExpect(jsonPath("$.purchaseDate").value(responseDto.purchaseDate().toString()));
 
-    @Test
-    @WithMockUser
-    void updatePurchase_Should_Return404_WhenPurchaseDoesNotExist() throws Exception {
-        Long purchaseId = 999L;
-        LocalDate today = LocalDate.now();
-        PurchaseUpdateDto updateDto = new PurchaseUpdateDto("Xícara", 5, MaterialType.GLASS, today.minusDays(5));
+    verify(purchaseService, times(1)).updatePurchase(eq(purchaseId), any(PurchaseUpdateDto.class));
+  }
 
-        when(purchaseService.updatePurchase(eq(purchaseId), any(PurchaseUpdateDto.class)))
-                .thenThrow(new EntityNotFoundException("Compra não encontrada com o id: " + purchaseId));
+  @Test
+  @WithMockUser
+  void updatePurchase_Should_Return404_WhenPurchaseDoesNotExist() throws Exception {
+    Long purchaseId = 999L;
+    LocalDate today = LocalDate.now();
+    PurchaseUpdateDto updateDto = new PurchaseUpdateDto("Xícara", 5, MaterialType.GLASS, today.minusDays(5));
 
-        mockMvc.perform(patch("/api/purchases/{purchaseId}", purchaseId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updateDto)))
-                .andExpect(status().isNotFound())
-                .andExpect(content().string("Compra não encontrada com o id: " + purchaseId));
+    when(purchaseService.updatePurchase(eq(purchaseId), any(PurchaseUpdateDto.class)))
+        .thenThrow(new EntityNotFoundException("Compra não encontrada com o id: " + purchaseId));
 
-        verify(purchaseService, times(1)).updatePurchase(eq(purchaseId), any(PurchaseUpdateDto.class));
-    }
+    mockMvc.perform(patch("/api/purchases/{purchaseId}", purchaseId)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(updateDto)))
+        .andExpect(status().isNotFound())
+        .andExpect(content().string("Compra não encontrada com o id: " + purchaseId));
 
-    @Test
-    @WithMockUser
-    void deletePurchase_Should_Return204_WhenPurchaseIsDeleted() throws Exception {
-        Long purchaseId = 1L;
+    verify(purchaseService, times(1)).updatePurchase(eq(purchaseId), any(PurchaseUpdateDto.class));
+  }
 
-        doNothing().when(purchaseService).deletePurchase(eq(purchaseId));
+  @Test
+  @WithMockUser
+  void deletePurchase_Should_Return204_WhenPurchaseIsDeleted() throws Exception {
+    Long purchaseId = 1L;
 
-        mockMvc.perform(delete("/api/purchases/{purchaseId}", purchaseId))
-                .andExpect(status().isNoContent())
-                .andExpect(content().string(""));
+    doNothing().when(purchaseService).deletePurchase(eq(purchaseId));
 
-        verify(purchaseService, times(1)).deletePurchase(eq(purchaseId));
-    }
+    mockMvc.perform(delete("/api/purchases/{purchaseId}", purchaseId))
+        .andExpect(status().isNoContent())
+        .andExpect(content().string(""));
 
-    @Test
-    @WithMockUser
-    void deletePurchase_ShouldReturn404_WhenPurchaseDoesNotExists() throws Exception {
-        Long purchaseId = 999L;
+    verify(purchaseService, times(1)).deletePurchase(eq(purchaseId));
+  }
 
-        doThrow(new EntityNotFoundException("Compra não encontrada com o id: " + purchaseId)).when(purchaseService)
-                .deletePurchase(eq(purchaseId));
+  @Test
+  @WithMockUser
+  void deletePurchase_ShouldReturn404_WhenPurchaseDoesNotExists() throws Exception {
+    Long purchaseId = 999L;
 
-        mockMvc.perform(delete("/api/purchases/{purchaseId}", purchaseId))
-                .andExpect(status().isNotFound())
-                .andExpect(content().string("Compra não encontrada com o id: " + purchaseId));
+    doThrow(new EntityNotFoundException("Compra não encontrada com o id: " + purchaseId)).when(purchaseService)
+        .deletePurchase(eq(purchaseId));
 
-        verify(purchaseService, times(1)).deletePurchase(eq(purchaseId));
-    }
+    mockMvc.perform(delete("/api/purchases/{purchaseId}", purchaseId))
+        .andExpect(status().isNotFound())
+        .andExpect(content().string("Compra não encontrada com o id: " + purchaseId));
 
-    @Test
-    @WithMockUser
-    void getTotalItensPurchased_Should_Return200AndTotalQuantity_WhenSucessful() throws Exception {
-        TotalPurchaseQuantityDto totalQuantityDto = new TotalPurchaseQuantityDto(50);
+    verify(purchaseService, times(1)).deletePurchase(eq(purchaseId));
+  }
 
-        when(purchaseService.getTotalItensPurchased()).thenReturn(totalQuantityDto);
+  @Test
+  @WithMockUser
+  void getTotalItensPurchased_Should_Return200AndTotalQuantity_WhenSucessful() throws Exception {
+    TotalPurchaseQuantityDto totalQuantityDto = new TotalPurchaseQuantityDto(50);
 
-        mockMvc.perform(get("/api/purchases/total-itens-purchased-30-days"))
-                .andExpect(status().isOk())
-                .andExpect(
-                        jsonPath("$.totalPurchasesCurrentMonth").value(totalQuantityDto.totalPurchasesCurrentMonth()));
+    when(purchaseService.getTotalItensPurchased()).thenReturn(totalQuantityDto);
 
-        verify(purchaseService, times(1)).getTotalItensPurchased();
-    }
+    mockMvc.perform(get("/api/purchases/total-itens-purchased-30-days"))
+        .andExpect(status().isOk())
+        .andExpect(
+            jsonPath("$.totalPurchasesCurrentMonth").value(totalQuantityDto.totalPurchasesCurrentMonth()));
 
-    @Test
-    @WithMockUser
-    void getPurchasesMaterialSummary_Should_Return200AndPurchasesMaterialSummary_WhenSucessful() throws Exception {
-        PurchaseMaterialAmountSummaryDto materialAmountSummaryDto = new PurchaseMaterialAmountSummaryDto(
-                Map.of("Plástico", 20));
+    verify(purchaseService, times(1)).getTotalItensPurchased();
+  }
 
-        when(purchaseService.getMaterialAmountSummaryDto()).thenReturn(materialAmountSummaryDto);
+  @Test
+  @WithMockUser
+  void getPurchasesMaterialSummary_Should_Return200AndPurchasesMaterialSummary_WhenSucessful() throws Exception {
+    PurchaseMaterialAmountSummaryDto materialAmountSummaryDto = new PurchaseMaterialAmountSummaryDto(
+        Map.of("Plástico", 20));
 
-        mockMvc.perform(get("/api/purchases/purchases-material-summary-30-days"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.materialAmountSummary.Plástico").value(20));
+    when(purchaseService.getMaterialAmountSummaryDto()).thenReturn(materialAmountSummaryDto);
 
-        verify(purchaseService, times(1)).getMaterialAmountSummaryDto();
-    }
+    mockMvc.perform(get("/api/purchases/purchases-material-summary-30-days"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.materialAmountSummary.Plástico").value(20));
+
+    verify(purchaseService, times(1)).getMaterialAmountSummaryDto();
+  }
 }
