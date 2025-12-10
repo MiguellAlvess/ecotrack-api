@@ -133,6 +133,8 @@ A documentação interativa gerada pelo Springdoc OpenAPI pode ser acessada em:
 
 ## Diagrama de entidades
 
+![Diagrama de Entidades](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/MiguellAlvess/ecotrack-api/refs/heads/main/docs/diagram.puml)
+
 ## Arquitetura geral
 
 O backend foi desenvolvido utilizando **Java com Spring Boot**, seguindo uma arquitetura em camadas que garante organização, escalabilidade e fácil manutenção.
