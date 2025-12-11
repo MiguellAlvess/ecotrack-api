@@ -22,7 +22,7 @@ jobs:
           - 5433:5432
 
     steps:
-      - name: Checkout código
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Configure JDK 21
@@ -46,4 +46,4 @@ jobs:
         run: |
           curl "$RENDER_DEPLOY_HOOK_URL"
         env:
-          RENDER_BACKEND_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
