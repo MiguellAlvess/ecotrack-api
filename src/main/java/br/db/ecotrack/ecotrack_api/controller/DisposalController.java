@@ -130,7 +130,7 @@ public class DisposalController {
       disposalService.deleteDisposalById(disposalId);
       return ResponseEntity.noContent().build();
     } catch (EntityNotFoundException e) {
-      return ResponseEntity.notFound().build();
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
   }
 }
