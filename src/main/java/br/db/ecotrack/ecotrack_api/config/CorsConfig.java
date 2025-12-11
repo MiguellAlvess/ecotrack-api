@@ -14,8 +14,11 @@ public class CorsConfig {
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(
-        Arrays.asList("http://localhost:5173", "http://127.0.0.1:5173", "https://recyclemetrics-frontend.vercel.app"));
+    configuration.setAllowedOrigins(Arrays.asList(
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "https://recyclemetrics-frontend.vercel.app",
+        "https://*.vercel.app"));
     configuration.setAllowedMethods(List.of("*"));
     configuration.setAllowedHeaders(List.of("*"));
     configuration.setAllowCredentials(true);
