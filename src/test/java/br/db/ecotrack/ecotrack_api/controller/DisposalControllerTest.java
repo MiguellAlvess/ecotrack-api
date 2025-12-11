@@ -241,7 +241,7 @@ public class DisposalControllerTest {
 
     when(disposalService.getTotalItensDisposal()).thenReturn(dto);
 
-    mockMvc.perform(get("/api/disposals/total-itens-disposed-30-days"))
+    mockMvc.perform(get("/api/disposals/dashboard/total-itens-disposed-30-days"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.totalDisposalsCurrentMonth").value(dto.totalDisposalsCurrentMonth()));
 
@@ -255,7 +255,7 @@ public class DisposalControllerTest {
 
     when(disposalService.getMostDiscardedMaterial()).thenReturn(dto);
 
-    mockMvc.perform(get("/api/disposals/disposals-most-discarded-material"))
+    mockMvc.perform(get("/api/disposals/dashboard/disposals-most-discarded-material"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.mostDiscardedMaterial").value("Plástico"));
 
@@ -270,7 +270,7 @@ public class DisposalControllerTest {
 
     when(disposalService.getDestinationAmountSummary()).thenReturn(dto);
 
-    mockMvc.perform(get("/api/disposals/disposals-destination-summary-30-days"))
+    mockMvc.perform(get("/api/disposals/dashboard/disposals-destination-summary-30-days"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.destinationAmountSummary.Reciclável").value(15));
 
@@ -284,7 +284,7 @@ public class DisposalControllerTest {
 
     when(disposalService.getMostUsedDestinationDisposal()).thenReturn(dto);
 
-    mockMvc.perform(get("/api/disposals/disposal-most-frequent-destination"))
+    mockMvc.perform(get("/api/disposals/dashboard/disposal-most-frequent-destination"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.destination").value(dto.destination()))
         .andExpect(jsonPath("$.quantity").value(dto.quantity()));
@@ -299,7 +299,7 @@ public class DisposalControllerTest {
 
     when(disposalService.getRecyclingPercentage()).thenReturn(dto);
 
-    mockMvc.perform(get("/api/disposals/percentage-disposals-items-30-days"))
+    mockMvc.perform(get("/api/disposals/dashboard/percentage-disposals-items-30-days"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.percentageDisposalRecycled").value(dto.percentageDisposalRecycled()));
 

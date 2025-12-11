@@ -240,7 +240,7 @@ public class PurchaseControllerTest {
 
     when(purchaseService.getTotalItensPurchased()).thenReturn(totalQuantityDto);
 
-    mockMvc.perform(get("/api/purchases/total-itens-purchased-30-days"))
+    mockMvc.perform(get("/api/purchases/dashboard/total-itens-purchased-30-days"))
         .andExpect(status().isOk())
         .andExpect(
             jsonPath("$.totalPurchasesCurrentMonth").value(totalQuantityDto.totalPurchasesCurrentMonth()));
@@ -256,7 +256,7 @@ public class PurchaseControllerTest {
 
     when(purchaseService.getMaterialAmountSummaryDto()).thenReturn(materialAmountSummaryDto);
 
-    mockMvc.perform(get("/api/purchases/purchases-material-summary-30-days"))
+    mockMvc.perform(get("/api/purchases/dashboard/purchases-material-summary-30-days"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.materialAmountSummary.Plástico").value(20));
 
