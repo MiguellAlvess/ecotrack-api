@@ -8,23 +8,27 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.hamcrest.Matchers.hasSize;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.DisposalRequestDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.DisposalResponseDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.DisposalUpdateDto;
@@ -38,8 +42,8 @@ import br.db.ecotrack.ecotrack_api.domain.enums.MaterialType;
 import br.db.ecotrack.ecotrack_api.service.DisposalService;
 import jakarta.persistence.EntityNotFoundException;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+@WebMvcTest(DisposalController.class)
+@AutoConfigureMockMvc(addFilters = false)
 public class DisposalControllerTest {
   @Autowired
   private MockMvc mockMvc;

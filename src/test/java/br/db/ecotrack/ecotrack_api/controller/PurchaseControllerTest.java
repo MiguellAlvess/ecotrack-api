@@ -17,13 +17,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.hamcrest.Matchers.hasSize;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
@@ -38,8 +38,8 @@ import br.db.ecotrack.ecotrack_api.domain.enums.MaterialType;
 import br.db.ecotrack.ecotrack_api.service.PurchaseService;
 import jakarta.persistence.EntityNotFoundException;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+@WebMvcTest(PurchaseController.class)
+@AutoConfigureMockMvc(addFilters = false)
 public class PurchaseControllerTest {
 
   @Autowired
