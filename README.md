@@ -154,7 +154,7 @@ As principais camadas são:
 
 #### Exemplo de um fluxo de atualização de usuário
 
-<img width="901" height="583" alt="image" src="https://github.com/user-attachments/assets/aae0408a-1c9c-43ae-bd09-0dcfdf73a9a7" />
+<img width="1179" height="677" alt="image" src="https://github.com/user-attachments/assets/3a685c7d-11b0-48d7-8f52-7dff8fae82db" />
 
 ## Autenticação
 
