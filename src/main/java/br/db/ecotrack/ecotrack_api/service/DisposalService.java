@@ -1,6 +1,14 @@
 package br.db.ecotrack.ecotrack_api.service;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.summingInt;
+
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.DisposalRequestDto;
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.DisposalResponseDto;
@@ -12,16 +20,10 @@ import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalRecyc
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.TotalDisposalQuantityDto;
 import br.db.ecotrack.ecotrack_api.domain.entity.Disposal;
 import br.db.ecotrack.ecotrack_api.domain.entity.User;
+import br.db.ecotrack.ecotrack_api.domain.enums.DisposalDestination;
 import br.db.ecotrack.ecotrack_api.mapper.DisposalMapper;
 import br.db.ecotrack.ecotrack_api.repository.DisposalRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.transaction.annotation.Transactional;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.summingInt;
 
 @Service
 public class DisposalService {
@@ -118,7 +120,8 @@ public class DisposalService {
       return new DisposalRecyclingPercentage(0.0);
 
     int recyclable = summary.entrySet().stream()
-        .filter(e -> !e.getKey().equalsIgnoreCase("Rejeito"))
+        .filter(e -> e.getKey().equalsIgnoreCase(
+            DisposalDestination.RECYCLING.getDescription()))
         .mapToInt(Map.Entry::getValue)
         .sum();
 
@@ -165,7 +168,7 @@ public class DisposalService {
 
     String mostDiscardedMaterialDto = materialQuantity.entrySet().stream()
         .max(Map.Entry.comparingByValue())
-        .map(entry-> entry.getKey())
+        .map(entry -> entry.getKey())
         .orElse("Sem registros");
 
     return new DisposalMostDiscardedMaterialDto(mostDiscardedMaterialDto);
