@@ -12,6 +12,7 @@ import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.DisposalRecyc
 import br.db.ecotrack.ecotrack_api.controller.dto.disposal.metrics.TotalDisposalQuantityDto;
 import br.db.ecotrack.ecotrack_api.domain.entity.Disposal;
 import br.db.ecotrack.ecotrack_api.domain.entity.User;
+import br.db.ecotrack.ecotrack_api.domain.enums.DisposalDestination;
 import br.db.ecotrack.ecotrack_api.mapper.DisposalMapper;
 import br.db.ecotrack.ecotrack_api.repository.DisposalRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -118,7 +119,7 @@ public class DisposalService {
       return new DisposalRecyclingPercentage(0.0);
 
     int recyclable = summary.entrySet().stream()
-        .filter(e -> !e.getKey().equalsIgnoreCase("Rejeito"))
+        .filter(e -> DisposalDestination.RECYCLING.name().equalsIgnoreCase(e.getKey()))
         .mapToInt(Map.Entry::getValue)
         .sum();
 
@@ -165,7 +166,7 @@ public class DisposalService {
 
     String mostDiscardedMaterialDto = materialQuantity.entrySet().stream()
         .max(Map.Entry.comparingByValue())
-        .map(entry-> entry.getKey())
+        .map(entry -> entry.getKey())
         .orElse("Sem registros");
 
     return new DisposalMostDiscardedMaterialDto(mostDiscardedMaterialDto);
