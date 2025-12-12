@@ -119,7 +119,8 @@ public class DisposalService {
       return new DisposalRecyclingPercentage(0.0);
 
     int recyclable = summary.entrySet().stream()
-        .filter(e -> DisposalDestination.RECYCLING.name().equalsIgnoreCase(e.getKey()))
+        .filter(e -> e.getKey().equalsIgnoreCase(
+            DisposalDestination.RECYCLING.getDescription()))
         .mapToInt(Map.Entry::getValue)
         .sum();
 
